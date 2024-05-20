@@ -1,6 +1,7 @@
 package Negocio;
 
 import Modelo.Deposito;
+import Otros.Persistencia;
 
 import java.util.Calendar;
 
@@ -14,6 +15,7 @@ public class GestorDepoitos extends GestorActivos {
         Deposito deposito = new Deposito(siguienteId, nombre, desembolso, TAE, fechaContratacion, comisionCompra);
         siguienteId++;
         listaActivos.add(deposito);
+        Persistencia.guardarDeposito(deposito);
     }
 
     public void venderDeposito(int id, Calendar fecha, double importeVenta, double comision) {

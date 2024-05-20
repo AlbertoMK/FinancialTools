@@ -9,12 +9,13 @@ import java.util.List;
 
 public class Utils {
 
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    private final static SimpleDateFormat sdfEuropea = new SimpleDateFormat("dd/MM/yyyy"); //MM en mayúsculas para que no lo confunda con minutos
+    private final static SimpleDateFormat sdfAmericana = new SimpleDateFormat("yyyy-MM-dd");
 
     public static Calendar deserializarFecha(String time) {
         Date date = null;
         try {
-            date = sdf.parse(time);
+            date = sdfEuropea.parse(time);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             return calendar;
@@ -23,8 +24,17 @@ public class Utils {
         }
     }
 
-    public static String serializarFecha(Calendar calendar){
-        return sdf.format(calendar.getTime());
+    public static String serializarFechaEuropea(Calendar calendar) {
+        return sdfEuropea.format(calendar.getTime());
+    }
+
+    private static String serializarFechaAmericana(Calendar calendar) {
+        String resultado = sdfAmericana.format(calendar.getTime());
+        return resultado;
+    }
+
+    public static java.sql.Date CalendarToSQLDate(Calendar calendar){
+        return java.sql.Date.valueOf(serializarFechaAmericana(calendar));
     }
 
     /**

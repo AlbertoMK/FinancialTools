@@ -70,12 +70,12 @@ public class Deposito extends Activo{
     public List getFlujosCaja() {
         List<HashMap> resultado = new ArrayList<>();
         HashMap<String, String> map = new HashMap<>();
-        map.put("Fecha", Utils.serializarFecha(fechaContratacion));
+        map.put("Fecha", Utils.serializarFechaEuropea(fechaContratacion));
         map.put("Flujo", String.valueOf(-(desembolso + comisionCompra)));
         resultado.add(map);
         for (Calendar fechaRetribucion : retribuciones.keySet()) {
             map = new HashMap<>();
-            map.put("Fecha", Utils.serializarFecha(fechaRetribucion));
+            map.put("Fecha", Utils.serializarFechaEuropea(fechaRetribucion));
             map.put("Flujo", String.valueOf(retribuciones.get(fechaRetribucion)));
             resultado.add(map);
         }
@@ -85,9 +85,25 @@ public class Deposito extends Activo{
         else
             ultimaFecha = Calendar.getInstance();
         map = new HashMap<>();
-        map.put("Fecha", Utils.serializarFecha(ultimaFecha));
+        map.put("Fecha", Utils.serializarFechaEuropea(ultimaFecha));
         map.put("Flujo", String.valueOf(retribuciones.get(getImporteActual())));
         resultado.add(map);
         return resultado;
+    }
+
+    public double getDesembolso() {
+        return desembolso;
+    }
+
+    public double getTAE() {
+        return TAE;
+    }
+
+    public double getComisionCompra() {
+        return comisionCompra;
+    }
+
+    public Calendar getFechaContratacion() {
+        return fechaContratacion;
     }
 }

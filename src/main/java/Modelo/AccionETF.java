@@ -69,14 +69,14 @@ public class AccionETF extends Activo{
         List<HashMap<String, String>> resultado = new ArrayList<>();
         for (CompraVentaAccionETF compraventa : compraventas) {
             HashMap<String, String> flujo = new HashMap<>();
-            flujo.put("Fecha", Utils.serializarFecha(compraventa.getFecha()));
+            flujo.put("Fecha", Utils.serializarFechaEuropea(compraventa.getFecha()));
             double cantidad = compraventa.getPrecio() * compraventa.getParticipaciones();
             if (compraventa.esCompra())
                 cantidad *= -1;
             flujo.put("Flujo", String.valueOf(cantidad));
         }
         HashMap<String, String> flujo = new HashMap<>();
-        flujo.put("Fecha", Utils.serializarFecha(Calendar.getInstance()));
+        flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
         flujo.put("Flujo", String.valueOf(getImporteActual()));
         resultado.add(flujo);
         return resultado;
