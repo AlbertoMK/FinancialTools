@@ -8,6 +8,8 @@ import java.util.List;
 
 public class SistemaStocks {
 
+    // TODO HACER LA CONVERSIÓN SI EL PRECIO ESTÁ EXPRESADO EN UNA DIVISA QUE NO SEAN EUROS
+
     public static double getPrecio(String ticker) {
         try {
             // Ejecutar el script de Python
