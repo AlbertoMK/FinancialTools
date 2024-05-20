@@ -7,8 +7,8 @@ import java.util.Calendar;
 public class GestorAcciones extends GestorActivos {
 
     public void crearAccion(String nombre, String ticker) {
-        AccionETF accion = new AccionETF(siguienteId, nombre, ticker);
-        siguienteId++;
+        AccionETF accion = new AccionETF(getSiguienteId(), nombre, ticker);
+        incrementarId();
         listaActivos.add(accion);
     }
 

@@ -1,5 +1,6 @@
 package Modelo;
 
+import Otros.Persistencia;
 import Otros.Utils;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class Deposito extends Activo{
         this.comisionCompra = comisionCompra;
         retribuciones = new HashMap<>();
         venta = null;
+        Persistencia.guardarDeposito(id, desembolso, TAE, fechaContratacion, comisionCompra, nombre);
     }
 
     @Override
@@ -51,10 +53,12 @@ public class Deposito extends Activo{
 
     public void vender(Calendar fecha, double importeVenta, double comision) {
         venta = new VentaDeposito(fecha, comision, importeVenta);
+        Persistencia.venderDeposito(this);
     }
 
     public void añadirRetribucion(Calendar fecha, double importe) {
         retribuciones.put(fecha, importe);
+        Persistencia.añadirRetribucionDeposito(getId(), fecha, importe);
     }
 
     public boolean estaVendido() {
@@ -105,5 +109,9 @@ public class Deposito extends Activo{
 
     public Calendar getFechaContratacion() {
         return fechaContratacion;
+    }
+
+    public VentaDeposito getVenta() {
+        return venta;
     }
 }

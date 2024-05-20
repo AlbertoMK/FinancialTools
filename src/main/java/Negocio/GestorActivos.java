@@ -1,6 +1,7 @@
 package Negocio;
 
 import Modelo.Activo;
+import Otros.Persistencia;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public abstract class GestorActivos {
 
-    protected static int siguienteId = 1;
+    private static int siguienteId = 1;
     protected List<Activo> listaActivos;
 
     public GestorActivos(){
@@ -17,6 +18,15 @@ public abstract class GestorActivos {
 
     public static void setSiguienteId(int siguienteId) {
         GestorActivos.siguienteId = siguienteId;
+    }
+
+    public static void incrementarId() {
+        siguienteId++;
+        Persistencia.incrementarId(siguienteId);
+    }
+
+    protected int getSiguienteId() {
+        return siguienteId;
     }
 
     public List<HashMap<String, String>> getFlujosCaja() {
