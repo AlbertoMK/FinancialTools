@@ -11,6 +11,8 @@ public class Persistencia {
 
     private Persistencia() {}
 
+    // ------------------------------------------------- DEPOSITOS ---------------------------------------------------
+
     public static void guardarDeposito(int id, double desembolso, double tae, Calendar fechaContratacion, double comisionCompra, String nombre) {
         Connection connection = abrirConexion();
         String sql = "INSERT INTO Deposito (id, desembolso, tae, fechaContratacion, comisionCompra, nombre, venta_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -69,6 +71,12 @@ public class Persistencia {
         }
         cerrarConexion(connection);
     }
+
+    // ------------------------------------------------- ACCIONES ---------------------------------------------------
+
+    // ------------------------------------------------- CUENTAS ---------------------------------------------------
+
+    // ------------------------------------------------- OTROS ---------------------------------------------------
 
     private static Connection abrirConexion() {
         Connection connection = null;
