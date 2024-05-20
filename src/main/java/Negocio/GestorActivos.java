@@ -8,15 +8,15 @@ import java.util.List;
 
 public abstract class GestorActivos {
 
-    protected static int followingId = 1;
+    protected static int siguienteId = 1;
     protected List<Activo> listaActivos;
 
     public GestorActivos(){
         listaActivos = new ArrayList<>();
     }
 
-    public static void setFollowingId(int followingId) {
-        GestorActivos.followingId = followingId;
+    public static void setSiguienteId(int siguienteId) {
+        GestorActivos.siguienteId = siguienteId;
     }
 
     public List<HashMap<String, String>> getFlujosCaja() {

@@ -3,20 +3,14 @@ package Modelo;
 import Otros.SistemaStocks;
 import Otros.Utils;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-@Entity
-@Table(name = "AccionETF")
 public class AccionETF extends Activo{
 
-    @Column(name = "ticker")
     private String ticker;
-
-    @JoinColumn(name = "compraventas")
     private List<CompraVentaAccionETF> compraventas;
 
     public AccionETF(int id, String nombre, String ticker) {

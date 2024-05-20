@@ -11,8 +11,8 @@ public class GestorDepoitos extends GestorActivos {
     }
 
     public void crearDeposito(String nombre, double desembolso, double TAE, Calendar fechaContratacion, double comisionCompra){
-        Deposito deposito = new Deposito(followingId, nombre, desembolso, TAE, fechaContratacion, comisionCompra);
-        followingId++;
+        Deposito deposito = new Deposito(siguienteId, nombre, desembolso, TAE, fechaContratacion, comisionCompra);
+        siguienteId++;
         listaActivos.add(deposito);
     }
 
