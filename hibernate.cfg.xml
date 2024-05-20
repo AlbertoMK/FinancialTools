@@ -1,0 +1,17 @@
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tu_base_de_datos</property>
+        <property name="hibernate.connection.username">tu_usuario</property>
+        <property name="hibernate.connection.password">tu_contraseña</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.show_sql">true</property>
+
+        <!-- Lista de clases anotadas -->
+        <mapping class="com.tu.paquete.TuClase"/>
+        <!-- Agrega aquí otras clases si las tienes -->
+    </session-factory>
+</hibernate-configuration>
