@@ -24,6 +24,19 @@ public class Deposito extends Activo{
         Persistencia.guardarDeposito(id, desembolso, TAE, fechaContratacion, comisionCompra, nombre);
     }
 
+    // usado para load
+    public Deposito(int id, String nombre, double desembolso, double TAE, Calendar fechaContratacion,
+                    double comisionCompra, HashMap<Calendar, Double> retribuciones, VentaDeposito venta) {
+        super(nombre, id);
+        this.desembolso = desembolso;
+        this.TAE = TAE;
+        this.fechaContratacion = fechaContratacion;
+        this.comisionCompra = comisionCompra;
+        this.retribuciones = retribuciones;
+        this.venta = venta;
+        venta = null;
+    }
+
     @Override
     public double getImporteInicial() {
         return desembolso;
@@ -38,7 +51,7 @@ public class Deposito extends Activo{
             for (double retribucion : retribuciones.values()) {
                 totalRetribuciones += retribucion;
             }
-            // calcular la cantidad acumulada. Para ello calculamos el tiempo desde la última retribucióny sobre la TAE hacemos la estimacion
+            // calcular la cantidad acumulada. Para ello calculamos el tiempo desde la última retribución y sobre la TAE hacemos la estimacion
             Calendar ultimaFecha = fechaContratacion;
             for (Calendar fecha : retribuciones.keySet()) {
                 if(fecha.after(ultimaFecha)){
@@ -67,7 +80,16 @@ public class Deposito extends Activo{
 
     @Override
     public HashMap<String, String> getJSON() {
-        return null;
+        HashMap<String, String> resultado = new HashMap<>();
+        resultado.put("id", String.valueOf(getId()));
+        resultado.put("nombre", getNombre());
+        resultado.put("desembolso", String.valueOf(desembolso));
+        resultado.put("tae", String.valueOf(TAE));
+        resultado.put("comisionCompra", String.valueOf(comisionCompra));
+        resultado.put("fechaContratacion", Utils.serializarFechaEuropea(fechaContratacion));
+        resultado.put("número retribuciones", String.valueOf(retribuciones.keySet().size()));
+        resultado.put("vendido", String.valueOf(estaVendido()));
+        return resultado;
     }
 
     @Override

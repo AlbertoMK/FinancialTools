@@ -2,10 +2,7 @@ package Otros;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Utils {
 
@@ -35,6 +32,12 @@ public class Utils {
 
     public static java.sql.Date CalendarToSQLDate(Calendar calendar){
         return java.sql.Date.valueOf(serializarFechaAmericana(calendar));
+    }
+
+    public static Calendar SQLDateToCalendar(java.sql.Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        return c;
     }
 
     /**

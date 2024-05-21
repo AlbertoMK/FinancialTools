@@ -16,8 +16,10 @@ public abstract class GestorActivos {
         listaActivos = new ArrayList<>();
     }
 
-    public static void setSiguienteId(int siguienteId) {
-        GestorActivos.siguienteId = siguienteId;
+    public abstract void load();
+
+    public static void loadSiguienteId() {
+        siguienteId = Persistencia.getSiguienteId();
     }
 
     public static void incrementarId() {

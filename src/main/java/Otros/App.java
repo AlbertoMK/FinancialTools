@@ -1,6 +1,9 @@
 package Otros;
 
+import Modelo.Activo;
 import Modelo.Deposito;
+import Negocio.GestorActivos;
+import Negocio.GestorDepoitos;
 
 import java.util.ArrayList;
 import java.util.Calendar;

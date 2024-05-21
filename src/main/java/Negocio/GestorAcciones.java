@@ -21,4 +21,9 @@ public class GestorAcciones extends GestorActivos {
         AccionETF accion = (AccionETF)getActivoById(id);
         accion.vender(participaciones, precio, fecha, comision);
     }
+
+    @Override
+    public void load() {
+
+    }
 }
