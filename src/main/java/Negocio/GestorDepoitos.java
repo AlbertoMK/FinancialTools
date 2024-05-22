@@ -12,8 +12,14 @@ import java.util.List;
 
 public class GestorDepoitos extends GestorActivos {
 
-    public GestorDepoitos() {
-        super();
+    private static GestorDepoitos instance = null;
+
+    private GestorDepoitos(){}
+
+    public static GestorDepoitos getInstance() {
+        if (instance == null)
+            instance = new GestorDepoitos();
+        return instance;
     }
 
     public void crearDeposito(String nombre, double desembolso, double TAE, Calendar fechaContratacion, double comisionCompra){

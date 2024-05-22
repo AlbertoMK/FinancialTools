@@ -208,7 +208,7 @@ public class Persistencia {
 
     public static void comprarVenderAccion(int accionId, double participaciones, double precio, Calendar fecha, double comision, boolean esCompra) {
         Connection connection = abrirConexion();
-        String sql = "INSERT INTO CompraAccion VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CompraAccion (participaciones, precio, fecha, comision, esCompra, accionETF_id) VALUES (?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setDouble(1, participaciones);

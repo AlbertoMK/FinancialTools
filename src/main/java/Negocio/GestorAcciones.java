@@ -12,6 +12,16 @@ import java.util.List;
 
 public class GestorAcciones extends GestorActivos {
 
+    private static GestorAcciones instance = null;
+
+    private GestorAcciones(){}
+
+    public static GestorAcciones getInstance() {
+        if (instance == null)
+            instance = new GestorAcciones();
+        return instance;
+    }
+
     public void crearAccion(String nombre, String ticker) {
         AccionETF accion = new AccionETF(getSiguienteId(), nombre, ticker);
         incrementarId();
