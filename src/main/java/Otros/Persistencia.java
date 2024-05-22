@@ -1,7 +1,6 @@
 package Otros;
 
 import Modelo.Deposito;
-import org.sqlite.jdbc4.JDBC4Connection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -189,6 +188,111 @@ public class Persistencia {
     }
 
     // ------------------------------------------------- ACCIONES ---------------------------------------------------
+
+    public static void guardarAccion(int id, String nombre, String ticker) {
+        Connection connection = abrirConexion();
+        String sql = "INSERT INTO AccionETF VALUES (?, ?, ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setString(3, ticker);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
+
+    public static void comprarVenderAccion(int accionId, double participaciones, double precio, Calendar fecha, double comision, boolean esCompra) {
+        Connection connection = abrirConexion();
+        String sql = "INSERT INTO CompraAccion VALUES (?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setDouble(1, participaciones);
+            preparedStatement.setDouble(2, precio);
+            preparedStatement.setDate(3, Utils.CalendarToSQLDate(fecha));
+            preparedStatement.setDouble(4, comision);
+            preparedStatement.setBoolean(5, esCompra);
+            preparedStatement.setInt(6, accionId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
+
+    /**
+     *
+     * @return Lista de representaciones de las acciones con una clave por atributo. La clave 'compraventas' tiene como valor una
+     * lista de representaciones de estas
+     */
+    public static List<HashMap<String, Object>> getAcciones() {
+        Connection connection = abrirConexion();
+        List<HashMap<String, Object>> resultado = new ArrayList<>();
+        String sqlAccion = "SELECT * FROM AccionETF";
+        try {
+            PreparedStatement stmtAccion = connection.prepareStatement(sqlAccion);
+            ResultSet accionesResult = stmtAccion.executeQuery();
+            while(accionesResult.next()) {
+                HashMap<String, Object> representacion = new HashMap<>();
+                int idAccion = accionesResult.getInt("id");
+                String nombre = accionesResult.getString("nombre");
+                String ticker = accionesResult.getString("ticker");
+
+                representacion.put("id", idAccion);
+                representacion.put("nombre", nombre);
+                representacion.put("ticker", ticker);
+                representacion.put("compraventas", getCompraVentas(idAccion));
+
+                resultado.add(representacion);
+            }
+            return resultado;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
+
+    private static List<HashMap<String, String>> getCompraVentas(int idAccion) {
+        List<HashMap<String, String>> resultado = new ArrayList<>();
+        Connection connection = abrirConexion();
+        String sqlCompraVenta = "SELECT * FROM CompraAccion WHERE accionETF_id = ?";
+        PreparedStatement stmtCompraVentas = null;
+        try {
+            stmtCompraVentas = connection.prepareStatement(sqlCompraVenta);
+            stmtCompraVentas.setInt(1, idAccion);
+            ResultSet compraVentaResult = stmtCompraVentas.executeQuery();
+            while(compraVentaResult.next()) {
+                HashMap<String, String> representacion = new HashMap<>();
+                double participaciones = compraVentaResult.getDouble("participaciones");
+                double precio = compraVentaResult.getDouble("precio");
+                Calendar fecha = Utils.SQLDateToCalendar(compraVentaResult.getDate("fecha"));
+                double comision = compraVentaResult.getDouble("comision");
+                boolean esCompra = compraVentaResult.getBoolean("esCompra");
+
+                representacion.put("participaciones", String.valueOf(participaciones));
+                representacion.put("precio", String.valueOf(precio));
+                representacion.put("fecha", Utils.serializarFechaEuropea(fecha));
+                representacion.put("comision", String.valueOf(comision));
+                representacion.put("esCompra", String.valueOf(esCompra));
+
+                resultado.add(representacion);
+            }
+            return resultado;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
 
     // ------------------------------------------------- CUENTAS ---------------------------------------------------
 

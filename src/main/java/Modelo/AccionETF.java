@@ -1,5 +1,6 @@
 package Modelo;
 
+import Otros.Persistencia;
 import Otros.SistemaStocks;
 import Otros.Utils;
 
@@ -17,16 +18,25 @@ public class AccionETF extends Activo{
         super(nombre, id);
         this.ticker = ticker;
         compraventas = new ArrayList<>();
+        Persistencia.guardarAccion(id, nombre, ticker);
+    }
+
+    public AccionETF(int id, String nombre, String ticker, List<CompraVentaAccionETF> compraventas) {
+        super(nombre, id);
+        this.ticker = ticker;
+        this.compraventas = compraventas;
     }
 
     public void comprar(double participaciones, double precio, Calendar fecha, double comision){
         CompraVentaAccionETF compra = new CompraVentaAccionETF(participaciones, precio, comision, fecha, true);
         compraventas.add(compra);
+        Persistencia.comprarVenderAccion(getId(), participaciones, precio, fecha, comision, true);
     }
 
     public void vender(double participaciones, double precio, Calendar fecha, double comision){
         CompraVentaAccionETF venta = new CompraVentaAccionETF(participaciones, precio, comision, fecha, false);
             compraventas.add(venta);
+        Persistencia.comprarVenderAccion(getId(), participaciones, precio, fecha, comision, false);
     }
 
     @Override
