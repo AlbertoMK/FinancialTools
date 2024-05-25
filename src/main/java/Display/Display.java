@@ -4,7 +4,6 @@ import Display.Comandos.Comando;
 import Display.Comandos.ComprarAccionCmd;
 import Display.Comandos.CrearCmd;
 import Display.Comandos.HelpCmd;
-import Negocio.GestorAcciones;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +52,7 @@ public class Display {
                     if(resutlado.length() > 0)
                         System.out.println(resutlado);
                 } catch (RuntimeException ex){
-                    System.out.println(ex);
+                    System.out.println(ex.getMessage());
                 }
             }
             else {
@@ -93,9 +92,10 @@ public class Display {
     }
 
     public static int selector(List<?> list) throws NumberFormatException {
+        System.out.println("Escoge una opción");
         int contador = 1;
         for(Object o : list) {
-            System.out.println(++contador+". " + o.toString());
+            System.out.println(contador++ +". " + o.toString());
         }
         int opcion = Integer.parseInt(readLine());
         return opcion - 1;

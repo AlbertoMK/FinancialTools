@@ -38,7 +38,7 @@ public class GestorDepoitos extends GestorActivos {
         deposito.añadirRetribucion(fecha, importe);
     }
 
-    public void load() {
+    protected void load() {
         List<HashMap<String, Object>> representacionesDepositos =  Persistencia.getDepositos();
         for (HashMap<String, Object> representacionDeposito : representacionesDepositos) {
             // atributos básicos

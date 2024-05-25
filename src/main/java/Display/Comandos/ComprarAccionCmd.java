@@ -42,23 +42,24 @@ public class ComprarAccionCmd extends Comando {
         if (!help && argumentos.length != 4) {
             throw new RuntimeException("Número de parámetros incorrecto");
         }
+        if(!help) {
+            try {
+                Double.parseDouble(argumentos[0]);
+                Double.parseDouble(argumentos[1]);
+                Utils.deserializarFecha(argumentos[2]);
+                Double.parseDouble(argumentos[3]);
+            } catch (RuntimeException ex) {
+                throw new RuntimeException("Formato incorrecto de los argumentos.");
+            }
 
-        try {
-            Double.parseDouble(argumentos[0]);
-            Double.parseDouble(argumentos[1]);
-            Utils.deserializarFecha(argumentos[2]);
-            Double.parseDouble(argumentos[3]);
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("Formato incorrecto de los argumentos.");
-        }
+            try {
+                List<HashMap<String, String>> activos = GestorAcciones.getInstance().getActivos();
+                int opcion = Display.selector(activos);
+                idAccion = Integer.parseInt(activos.get(opcion).get("id"));
 
-        try {
-            List<HashMap<String, String>> activos = GestorAcciones.getInstance().getActivos();
-            int opcion = Display.selector(activos);
-            idAccion = Integer.parseInt(activos.get(opcion).get("id"));
-
-        } catch (NumberFormatException ex) {
-            throw new RuntimeException("Error en la opción escogida");
+            } catch (NumberFormatException ex) {
+                throw new RuntimeException("Error en la opción escogida");
+            }
         }
 
         if (help) {

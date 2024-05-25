@@ -68,9 +68,9 @@ public class AccionETF extends Activo{
     @Override
     public HashMap<String, String> getJSON() {
         HashMap<String, String> resultado = new HashMap<>();
-        resultado.put("Id", String.valueOf(getId()));
-        resultado.put("Nombre", String.valueOf(getNombre()));
-        resultado.put("Ticker", String.valueOf(ticker));
+        resultado.put("id", String.valueOf(getId()));
+        resultado.put("nombre", String.valueOf(getNombre()));
+        resultado.put("ticker", String.valueOf(ticker));
         return resultado;
     }
 

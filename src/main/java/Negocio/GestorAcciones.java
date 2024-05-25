@@ -39,7 +39,7 @@ public class GestorAcciones extends GestorActivos {
     }
 
     @Override
-    public void load() {
+    protected void load() {
         List<HashMap<String, Object>> representaciones = Persistencia.getAcciones();
         for (HashMap<String, Object> representacion : representaciones) {
             int idAccion = (int) representacion.get("id");

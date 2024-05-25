@@ -13,9 +13,10 @@ public abstract class GestorActivos {
 
     public GestorActivos(){
         listaActivos = new ArrayList<>();
+        this.load();
     }
 
-    public abstract void load();
+    protected abstract void load();
 
     public static void incrementarId() {
         Persistencia.incrementarId();
