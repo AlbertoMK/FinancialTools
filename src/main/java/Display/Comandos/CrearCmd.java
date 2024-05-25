@@ -14,8 +14,8 @@ public class CrearCmd extends Comando {
     private String[] argumentos;
     Options opciones;
 
-    public CrearCmd(String args[]) {
-
+    public CrearCmd() {
+        referencia = "crear";
         opciones = new Options();
 
         OptionGroup opcionModelo = new OptionGroup();
@@ -23,6 +23,10 @@ public class CrearCmd extends Comando {
         opcionModelo.addOption(new Option("d", "deposito", false, "Crear un depósito"));
         opcionModelo.addOption(new Option("h", "help", false, "Imprime la ayuda del comando"));
         opciones.addOptionGroup(opcionModelo);
+    }
+
+    @Override
+    public String ejecutar(String[] args) {
 
         CommandLineParser parser = new DefaultParser();
 
@@ -62,10 +66,7 @@ public class CrearCmd extends Comando {
         } catch (ParseException e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
 
-    @Override
-    public String ejecutar() {
         String resultado = "";
         String nombre;
         switch(modelo) {
