@@ -16,10 +16,9 @@ public class ComprarAccionCmd extends Comando {
     private int idAccion;
     private String[] argumentos;
 
-    public ComprarAccionCmd(String[] args) {
+    public ComprarAccionCmd() {
         referencia = "comprarAccion";
         opciones = new Options();
-
         opciones.addOption(new Option("h", "help", false, "Imprime la ayuda del comando"));
     }
 

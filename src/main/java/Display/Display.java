@@ -1,14 +1,96 @@
 package Display;
 
+import Display.Comandos.Comando;
+import Display.Comandos.ComprarAccionCmd;
+import Display.Comandos.CrearCmd;
+import Display.Comandos.HelpCmd;
 import Negocio.GestorAcciones;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
 public class Display {
 
+    private static Display instance = null;
     private static Scanner scanner = new Scanner(System.in);
+    List<Comando> comandos;
+
+    private Display() {
+        comandos = new ArrayList<>();
+        comandos.add(new CrearCmd());
+        comandos.add(new ComprarAccionCmd());
+        comandos.add(new HelpCmd());
+    }
+
+    public static Display getInstance() {
+        if(instance == null)
+            instance = new Display();
+        return instance;
+    }
+
+    public void run() {
+        boolean comandoEncontrado;
+        int indexComandos;
+        while(true) {
+            String linea = readLine();
+            String referencia = linea.split(" ")[0];
+            List<String> argumentos = getArgumentos(linea.substring(linea.indexOf(" ") + 1));
+            String[] argumentosArray = new String[argumentos.size()];
+            argumentosArray = argumentos.toArray(argumentosArray);
+            comandoEncontrado = false;
+            indexComandos = 0;
+            while(!comandoEncontrado && indexComandos < comandos.size()) {
+                if(comandos.get(indexComandos).itsMe(referencia))
+                    comandoEncontrado = true;
+                else
+                    indexComandos++;
+            }
+            if(comandoEncontrado){
+                try {
+                    String resutlado = comandos.get(indexComandos).ejecutar(argumentosArray);
+                    if(resutlado.length() > 0)
+                        System.out.println(resutlado);
+                } catch (RuntimeException ex){
+                    System.out.println(ex);
+                }
+            }
+            else {
+                System.out.println("Comando no reconocido");
+            }
+        }
+    }
+
+    public List<Comando> getComandos() {
+        return comandos;
+    }
+
+    /**
+     * Esta función separa por los espacios el comando recibido dando lugar a una lista de String. Mantiene unido como un mismo argumento  aquello que
+     * esté entre comillas
+     * @return lista de argumentos
+     */
+    private List<String> getArgumentos(String argumentos) {
+        List<String> resultado = new ArrayList<>();
+        boolean inQuote = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < argumentos.length(); i++) {
+            if(argumentos.charAt(i) == '"'){
+                inQuote = !inQuote;
+            }
+            else if(argumentos.charAt(i) == ' ' && !inQuote){
+                resultado.add(sb.toString());
+                sb = new StringBuilder();
+            }
+            else {
+                sb.append(argumentos.charAt(i));
+            }
+        }
+        if(sb.length() != 0)
+            resultado.add(sb.toString());
+        return resultado;
+    }
 
     public static int selector(List<?> list) throws NumberFormatException {
         int contador = 1;
