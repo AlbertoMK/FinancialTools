@@ -76,12 +76,12 @@ public class CrearCmd extends Comando {
                     public void printHelp(String cmdLineSyntax, Options options) {
                         String header = "Opciones disponibles:";
                         String footer = "\nEjemplos de uso:\n"
-                                  + "  CrearCmd -a nombre ticker\n"
-                                  + "  CrearCmd -d nombre desembolso tae fechaContratacion comisionCompra";
+                                  + "  crear -a nombre ticker\n"
+                                  + "  crear -d nombre desembolso tae fechaContratacion comisionCompra";
                         super.printHelp(cmdLineSyntax, header, options, footer, true);
                     }
                 };
-                formatter.printHelp("CrearCmd", opciones);
+                formatter.printHelp("crear", opciones);
                 break;
             case "deposito":
                 nombre = argumentos[0];
