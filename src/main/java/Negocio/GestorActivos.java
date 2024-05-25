@@ -9,7 +9,6 @@ import java.util.List;
 
 public abstract class GestorActivos {
 
-    private static int siguienteId = 1;
     protected List<Activo> listaActivos;
 
     public GestorActivos(){
@@ -18,17 +17,12 @@ public abstract class GestorActivos {
 
     public abstract void load();
 
-    public static void loadSiguienteId() {
-        siguienteId = Persistencia.getSiguienteId();
-    }
-
     public static void incrementarId() {
-        siguienteId++;
-        Persistencia.incrementarId(siguienteId);
+        Persistencia.incrementarId();
     }
 
     protected int getSiguienteId() {
-        return siguienteId;
+        return Persistencia.getSiguienteId();
     }
 
     public List<HashMap<String, String>> getFlujosCaja() {

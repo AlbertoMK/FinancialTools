@@ -318,11 +318,12 @@ public class Persistencia {
         }
     }
 
-    public static void incrementarId(int siguienteId) {
+    public static void incrementarId() {
+        int idAnterior = getSiguienteId();
         Connection connection = abrirConexion();
         String sql = "UPDATE SiguienteId SET siguienteId = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, siguienteId);
+            statement.setInt(1, idAnterior + 1);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
