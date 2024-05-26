@@ -1,9 +1,6 @@
 package Display;
 
-import Display.Comandos.Comando;
-import Display.Comandos.ComprarAccionCmd;
-import Display.Comandos.CrearCmd;
-import Display.Comandos.HelpCmd;
+import Display.Comandos.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +18,7 @@ public class Display {
         comandos.add(new CrearCmd());
         comandos.add(new ComprarAccionCmd());
         comandos.add(new HelpCmd());
+        comandos.add(new VenderDepositoCmd());
     }
 
     public static Display getInstance() {
