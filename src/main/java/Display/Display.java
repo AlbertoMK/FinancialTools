@@ -19,6 +19,7 @@ public class Display {
         comandos.add(new ComprarAccionCmd());
         comandos.add(new HelpCmd());
         comandos.add(new VenderDepositoCmd());
+        comandos.add(new RentabilidadCmd());
     }
 
     public static Display getInstance() {
@@ -51,6 +52,7 @@ public class Display {
                         System.out.println(resutlado);
                 } catch (RuntimeException ex){
                     System.out.println(ex.getMessage());
+                    throw ex;
                 }
             }
             else {

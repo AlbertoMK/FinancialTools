@@ -84,6 +84,7 @@ public class AccionETF extends Activo{
             if (compraventa.esCompra())
                 cantidad *= -1;
             flujo.put("Flujo", String.valueOf(cantidad));
+            resultado.add(flujo);
         }
         HashMap<String, String> flujo = new HashMap<>();
         flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));

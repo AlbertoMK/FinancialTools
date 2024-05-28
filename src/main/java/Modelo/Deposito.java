@@ -112,7 +112,7 @@ public class Deposito extends Activo{
             ultimaFecha = Calendar.getInstance();
         map = new HashMap<>();
         map.put("Fecha", Utils.serializarFechaEuropea(ultimaFecha));
-        map.put("Flujo", String.valueOf(retribuciones.get(getImporteActual())));
+        map.put("Flujo", String.valueOf(getImporteActual()));
         resultado.add(map);
         return resultado;
     }
