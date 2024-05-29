@@ -22,6 +22,15 @@ def getPrecios(tickers):
     for precio, divisa in zip(precios, divisas):
         print(str(precio)+","+divisa)
 
+# EQUITY (accion), CRYPTOCURRENCY (crypto), ETF...
+def getTipo(ticker):
+    activo = yf.Ticker(ticker)
+    print(activo.info["quoteType"])
+
+def getSector(ticker):
+    activo = yf.Ticker(ticker)
+    print(activo.info["sector"])
+
 if __name__ == "__main__":
     if operacion == "getPrecio":
         args = getPrecio(ticker)
@@ -29,3 +38,7 @@ if __name__ == "__main__":
     elif operacion == "getPrecios":
         tickers = ticker.split(',')
         getPrecios(tickers)
+    elif operacion == "getTipo":
+        getTipo(ticker)
+    elif operacion == "getSector":
+        getSector(ticker)

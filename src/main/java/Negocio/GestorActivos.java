@@ -52,4 +52,12 @@ public abstract class GestorActivos {
         }
         return resultado;
     }
+
+    public double getValorCartera(){
+        double contador = 0;
+        for (Activo activo : listaActivos) {
+            contador += activo.getImporteActual();
+        }
+        return contador;
+    }
 }

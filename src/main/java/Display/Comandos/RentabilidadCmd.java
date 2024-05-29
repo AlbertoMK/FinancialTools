@@ -69,7 +69,7 @@ public class RentabilidadCmd extends Comando{
             DecimalFormat df = new DecimalFormat("#.00");
             double importeInicial = rentabilidad.get("importeInicial");
             double beneficio = rentabilidad.get("beneficio");
-            resultado = "Has obtenido "+ df.format(beneficio) + "€ sobre los " + importeInicial + "€ invertidos (" + df.format(beneficio/importeInicial*100) + "%)";
+            resultado = "Has obtenido "+ df.format(beneficio) + "€ sobre los " + df.format(importeInicial) + "€ invertidos (" + df.format(beneficio/importeInicial*100) + "%)";
         }
         return resultado;
     }

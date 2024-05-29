@@ -1,6 +1,7 @@
 package Negocio;
 
 import Modelo.AccionETF;
+import Modelo.Activo;
 import Modelo.CompraVentaAccionETF;
 import Otros.Persistencia;
 import Otros.Utils;
@@ -36,6 +37,31 @@ public class GestorAcciones extends GestorActivos {
     public void venderAccion(int id, double participaciones, double precio, Calendar fecha, double comision) {
         AccionETF accion = (AccionETF)getActivoById(id);
         accion.vender(participaciones, precio, fecha, comision);
+    }
+
+    /**
+     *
+     * @return HashMap con los sectores y el peso que tiene cada uno en la cartera
+     * @implNote Al llamar al método importeActual() para conocer los pesos de los activos en la cartera, los fondos que han sido vendidos
+     * también se están contabilizando en el cálculo de los pesos de los sectores.
+     */
+    public HashMap<String, Double> getPorcentajeSectores() {
+        double valorCartera = getValorCartera();
+        HashMap<String, Double> resultado = new HashMap<>();
+        for(Activo activo : listaActivos) {
+            double valorActivo = activo.getImporteActual();
+            AccionETF accion = (AccionETF) activo;
+            HashMap<String, Double> sectores = accion.getPorcentajeSectores();
+            for (String sector : sectores.keySet()) {
+                if(resultado.containsKey(sector)){
+                    resultado.put(sector, resultado.get(sector) + sectores.get(sector) * (valorActivo / valorCartera));
+                }
+                else {
+                    resultado.put(sector, sectores.get(sector) * (valorActivo / valorCartera));
+                }
+            }
+        }
+        return resultado;
     }
 
     @Override

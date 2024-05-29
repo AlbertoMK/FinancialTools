@@ -3,7 +3,12 @@ package Modelo;
 import Otros.Persistencia;
 import Otros.SistemaStocks;
 import Otros.Utils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -90,6 +95,44 @@ public class AccionETF extends Activo{
         flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
         flujo.put("Flujo", String.valueOf(getImporteActual()));
         resultado.add(flujo);
+        return resultado;
+    }
+
+    /**
+     *
+     * @return HashMap con los sectores como clave y el porcentaje de peso como valor
+     */
+    public HashMap<String, Double> getPorcentajeSectores() {
+        String tipo = SistemaStocks.getTipoAccionETF(ticker);
+        HashMap<String, Double> resultado = new HashMap<>();
+        switch (tipo) {
+            case "ETF":
+                String url = "https://finance.yahoo.com/quote/"+ticker+"/holdings";
+                try {
+                    Document doc = Jsoup.connect(url).get();
+                    Element containerSection = doc.select("section[data-testid=etf-sector-weightings-overview]").first();
+                    Element container = containerSection.select(".container").first();
+                    Elements innerDivs = container.select("div.content");
+                    for (Element e : innerDivs) {
+                        String sector = e.select("a").first().text();
+                        String porcentajeS = e.select("span.data").first().text();
+                        double porcentaje = Double.valueOf(porcentajeS.substring(0, porcentajeS.length() - 1));
+                        resultado.put(sector, porcentaje);
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "EQUITY":
+                resultado.put(SistemaStocks.getSectorAccion(ticker), 100.0);
+                break;
+            case "CRYPTOCURRENCY":
+                resultado.put("Crypto", 100.0);
+                break;
+            default:
+                throw new RuntimeException("Tipo no reconocido para acción " + getNombre() + "y ticker " + ticker);
+        }
         return resultado;
     }
 }
