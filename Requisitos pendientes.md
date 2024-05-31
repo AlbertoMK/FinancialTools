@@ -1,5 +1,5 @@
 - [ ] Buenas y malas decisiones (con parámetro para seleccionar cuantas decisiones mostrar) y otro opcional para no contar con los de precio 0. (fácil)
-- [ ] Rentabilidad anualizada
+- [x] Rentabilidad anualizada
 - [ ] Añadir filtro periodo a rentabilidad
 - [ ] Calculadora interés compuesto
 - [ ] Calculadora valor presente
