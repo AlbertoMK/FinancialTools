@@ -1,13 +1,11 @@
 package Display.Comandos;
 
 import Negocio.GestorAcciones;
-import Negocio.GestorActivos;
 import Negocio.GestorDepoitos;
 import Otros.Utils;
 import org.apache.commons.cli.*;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,6 +13,7 @@ public class RentabilidadCmd extends Comando{
 
     Options opciones;
     String tipo;
+    boolean anualizada;
 
     public RentabilidadCmd() {
         referencia = "rentabilidad";
@@ -29,6 +28,8 @@ public class RentabilidadCmd extends Comando{
         primeraOpcion.addOption(o3);
         primeraOpcion.addOption(o4);
         opciones.addOptionGroup(primeraOpcion);
+
+        opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
     }
 
     @Override
@@ -47,12 +48,24 @@ public class RentabilidadCmd extends Comando{
                 tipo = "total";
             else
                 throw new RuntimeException("La primera opción es obligatoria");
+
+            anualizada = cmd.hasOption("y");
         } catch (ParseException ex) {
             throw new RuntimeException("Error en el parseo de los argumentos");
         }
 
         if(tipo.equals("help")){
-            HelpFormatter formatter = new HelpFormatter();
+            HelpFormatter formatter = new HelpFormatter() {
+                @Override
+                public void printHelp(String cmdLineSyntax, Options options) {
+                    String header = "Opciones disponibles:";
+                    String footer = "\nEjemplos de uso:\n"
+                              + "  rentabilidad -a [-y]\n"
+                              + "  rentabilidad -d [-y]\n"
+                              + "  rentabilidad -t [-y]";
+                    super.printHelp(cmdLineSyntax, header, options, footer, true);
+                }
+            };
             formatter.printHelp("rentabilidad", opciones);
         }
         else {
@@ -69,7 +82,11 @@ public class RentabilidadCmd extends Comando{
             DecimalFormat df = new DecimalFormat("#.00");
             double importeInicial = rentabilidad.get("importeInicial");
             double beneficio = rentabilidad.get("beneficio");
-            resultado = "Has obtenido "+ df.format(beneficio) + "€ sobre los " + df.format(importeInicial) + "€ invertidos (" + df.format(beneficio/importeInicial*100) + "%)";
+            double diasTranscurridos = rentabilidad.get("duracion");
+            resultado = "Has obtenido "+ df.format(beneficio) + "€ sobre los " + df.format(importeInicial) + "€ invertidos (";
+            if(anualizada)
+                resultado = resultado + df.format(beneficio/importeInicial*100*365/diasTranscurridos) + "% anualizado)";
+            else resultado = resultado +  df.format(beneficio/importeInicial*100) + "%)";
         }
         return resultado;
     }

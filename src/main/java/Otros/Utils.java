@@ -64,9 +64,13 @@ public class Utils {
                     remanente -= Math.abs(Double.parseDouble(flujo.get("Flujo")));
             }
         }
+        Calendar primeraFecha = Utils.deserializarFecha(flujosCaja.get(0).get("Fecha"));
+        Calendar ultimaFecha = Utils.deserializarFecha(flujosCaja.get(flujosCaja.size()-1).get("Fecha"));
+        double diasTranscurridos = (ultimaFecha.getTimeInMillis() - primeraFecha.getTimeInMillis())  / (24 * 60 * 60 * 1000);
         HashMap<String, Double> resultado = new HashMap<>();
         resultado.put("importeInicial", capitalInicial);
         resultado.put("beneficio", beneficio);
+        resultado.put("duracion", diasTranscurridos); // tiempo transcurrido desde el primero flujo hasta el último en días
         return resultado;
     }
 }
