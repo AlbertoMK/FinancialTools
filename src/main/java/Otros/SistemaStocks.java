@@ -42,38 +42,6 @@ public class SistemaStocks {
         }
     }
 
-    public static HashMap<String, Double> getPrecios(List<String> tickers){
-        HashMap<String, Double> resultado = new HashMap<>();
-        StringBuffer  sb= new StringBuffer();
-        for(String ticker: tickers) {
-            sb.append(ticker + ",");
-        }
-        String parametro = sb.toString().substring(0,sb.length()-1);
-
-        try {
-            // Ejecutar el script de Python
-            Process proceso = Runtime.getRuntime().exec("python Precio.py getPrecios "+parametro);
-
-            // Leer la salida del script de Python
-            BufferedReader reader = new BufferedReader(new InputStreamReader(proceso.getInputStream()));
-            String linea;
-            int i = 0;
-            while ((linea = reader.readLine()) != null) {
-                String divisa = linea.split(",")[1];
-                if(divisa.equals("EUR"))
-                    resultado.put(tickers.get(i), Double.parseDouble(linea.split(",")[0]));
-                else if(divisa.equals("USD"))
-                    resultado.put(tickers.get(i), dolarAEuro(Double.parseDouble(linea.split(",")[0])));
-                else throw new RuntimeException("Divisa no reconocida");
-                i++;
-            }
-            int exitCode = proceso.waitFor();
-            return resultado;
-        } catch (InterruptedException | IOException e) {
-            throw new RuntimeException("Fallo con el sistema de stocks");
-        }
-    }
-
     public static String getTipoAccionETF(String ticker) {
         try {
             // Ejecutar el script de Python

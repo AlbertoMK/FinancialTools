@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class AccionETF extends Activo{
+public class AccionETF extends Activo {
 
     private String ticker;
     private List<CompraVentaAccionETF> compraventas;
@@ -32,22 +32,22 @@ public class AccionETF extends Activo{
         this.compraventas = compraventas;
     }
 
-    public void comprar(double participaciones, double precio, Calendar fecha, double comision){
+    public void comprar(double participaciones, double precio, Calendar fecha, double comision) {
         CompraVentaAccionETF compra = new CompraVentaAccionETF(participaciones, precio, comision, fecha, true);
         compraventas.add(compra);
         Persistencia.comprarVenderAccion(getId(), participaciones, precio, fecha, comision, true);
     }
 
-    public void vender(double participaciones, double precio, Calendar fecha, double comision){
+    public void vender(double participaciones, double precio, Calendar fecha, double comision) {
         CompraVentaAccionETF venta = new CompraVentaAccionETF(participaciones, precio, comision, fecha, false);
-            compraventas.add(venta);
+        compraventas.add(venta);
         Persistencia.comprarVenderAccion(getId(), participaciones, precio, fecha, comision, false);
     }
 
     @Override
     public double getImporteInicial() {
         double resultado = 0;
-        for (CompraVentaAccionETF compraventa : compraventas){
+        for (CompraVentaAccionETF compraventa : compraventas) {
             if (compraventa.esCompra())
                 resultado += (compraventa.getParticipaciones() * compraventa.getPrecio());
         }
@@ -64,8 +64,10 @@ public class AccionETF extends Activo{
             comisiones += compraVenta.getComision();
             if (compraVenta.esCompra())
                 participacionesTotales += compraVenta.getParticipaciones();
-            else
+            else {
                 importeVendido += compraVenta.getParticipaciones() * compraVenta.getPrecio();
+                participacionesTotales -= compraVenta.getParticipaciones();
+            }
         }
         return importeVendido + participacionesTotales * valorParticipacion - comisiones;
     }
@@ -99,7 +101,6 @@ public class AccionETF extends Activo{
     }
 
     /**
-     *
      * @return HashMap con los sectores como clave y el porcentaje de peso como valor
      */
     public HashMap<String, Double> getPorcentajeSectores() {
@@ -107,7 +108,7 @@ public class AccionETF extends Activo{
         HashMap<String, Double> resultado = new HashMap<>();
         switch (tipo) {
             case "ETF":
-                String url = "https://finance.yahoo.com/quote/"+ticker+"/holdings";
+                String url = "https://finance.yahoo.com/quote/" + ticker + "/holdings";
                 try {
                     Document doc = Jsoup.connect(url).get();
                     Element containerSection = doc.select("section[data-testid=etf-sector-weightings-overview]").first();
