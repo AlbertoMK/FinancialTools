@@ -32,6 +32,14 @@ public class RentabilidadCmd extends Comando{
         opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
     }
 
+    /* TODO
+        1. Eliminar el importeActual del cálculo de flujos
+        2. Añadir el importe que toma cada activo en la fecha que interesa, hasta ahora simplemente sería mover la responabilidad de añadir el último flujo a este comando
+            en vez de que lo haga el propio activo.
+        3. Si se quiere calcular la rentabilidad entre dos fechas, calcular la rentabilidad con los flujos hasta el primer periodo, habiendo añadido flujo
+            con el importe que tomaba cada activo. Valor1 = capitalInicial1 + beneficio1. Valor2 = Valor1 + capitalInicial2 + beneficio2
+     */
+
     @Override
     public String ejecutar(String[] args) {
         String resultado = "";

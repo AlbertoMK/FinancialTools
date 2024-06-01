@@ -8,6 +8,7 @@ import org.jsoup.select.Elements;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +41,15 @@ public class SistemaStocks {
         } catch (IOException e) {
             throw new RuntimeException("Fallo con el sistema de stocks");
         }
+    }
+
+    // TODO devuelve el precio del activo en la fecha indicada
+    public static double getPrecioFecha(String ticker, Calendar fecha) {
+        // acceder al activo, tabla.
+        // calcular el día al que hay que acceder, si cae en sabado o domingo acceder al dato del viernes anterior
+        // especificar como periodo 1 = fecha, periodo 2 = día siguiente
+        // acceder al único registro que mostrará la tabla.
+        return 0;
     }
 
     public static String getTipoAccionETF(String ticker) {
