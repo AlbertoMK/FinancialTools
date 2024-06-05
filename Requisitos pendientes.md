@@ -15,4 +15,5 @@
 - [ ] Análisis de sentimiento de mercado (usando las recomendaciones de inversión de yahoo finance) (muy difícil)
 - [ ] Modelo de correlación entre acciones, etfs o de la cartera entera (mide la diversidad o lo mucho o poco que están relacionadas dos empresas/etf)
 - [ ] Maximizador de eficiencia siguiendo el modelo de Markowitz. Usa muchos cálculos y valoraciones para maximizar el cociente rentabilidad/riesgo. (muy difícil)
+- [ ] Simulador de Monte Carlo con parámetros como las acciones que vas a considerar, el tiempo pasado sobre el que basarse y el tiempo futuro que predecir. (difícil)
 - [ ] Construcción de robo-advisor siguiendo las tendencias de mercado, riesgo del usuario, diversificación... (se apoya mucho en los módulos mencionados anteriormente) (muy difícil)
