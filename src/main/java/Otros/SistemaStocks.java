@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 public class SistemaStocks {
 
@@ -44,12 +45,63 @@ public class SistemaStocks {
     }
 
     // TODO devuelve el precio del activo en la fecha indicada
+
+    /**
+     * Este método sigue los siguientes pasos:
+     * 1. Si la fecha es de fin de semana, calcula la fecha del viernes anterior ya que el mercado está cerrado en fin de semana y no hay datos.
+     * 2. Formatea la fecha a zona horaria UTC y en formato segundos para cumplir con el formato de Yahoo Finance
+     * 3. Calcula la fecha del día siguiente para dar el intervalo a la web
+     * 4. Calcula las fechas en segundos para cumplir con el formato de Yahoo Finance
+     * 5. Accede a la url, busca el dato que interesa y lo devuelve.
+     * @param ticker Ticker del activo del cual obtener el precio
+     * @param fecha Fecha para la cual se quiere calcular el precio
+     * @return Precio del activo indicado en la fecha indicada
+     */
     public static double getPrecioFecha(String ticker, Calendar fecha) {
-        // acceder al activo, tabla.
-        // calcular el día al que hay que acceder, si cae en sabado o domingo acceder al dato del viernes anterior
-        // especificar como periodo 1 = fecha, periodo 2 = día siguiente
-        // acceder al único registro que mostrará la tabla.
-        return 0;
+        long sec1, sec2;
+        if (getTipoAccionETF(ticker).equals("CRYPTOCURRENCY")){
+            Calendar fechaUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            fechaUTC.set(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH), fecha.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+            sec1 = sec2 = fechaUTC.getTimeInMillis()/1000;
+        } else {
+            int diaSemana = fecha.get(Calendar.DAY_OF_WEEK);
+            if(diaSemana == Calendar.SATURDAY)
+                fecha.add(Calendar.DAY_OF_MONTH, -1);
+            else if (diaSemana == Calendar.SUNDAY)
+                fecha.add(Calendar.DAY_OF_MONTH, -2);
+            Calendar fechaUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            fechaUTC.set(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH), fecha.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+            Calendar diaSiguiente = (Calendar) fechaUTC.clone();
+            diaSiguiente.add(Calendar.DAY_OF_MONTH, 1);
+            sec1 = fechaUTC.getTimeInMillis()/1000;
+            sec2 = diaSiguiente.getTimeInMillis()/1000;
+        }
+        try {
+            boolean registroEncontrado = false;
+            double precio = 0;
+            while(!registroEncontrado){
+                String url = String.format("https://es.finance.yahoo.com/quote/%s/history/?period1=%d&period2=%d&interval=1d&frequency=1d", ticker, sec1, sec2);
+                Document doc = Jsoup.connect(url).get();
+                Element tabla = doc.select("table[data-test=historical-prices]").first();
+                String precioS = tabla.select("tbody > tr > td:nth-of-type(5) > span").text().replace(".","").replace(",",".");
+                if(precioS.isEmpty()){
+                    sec2 = sec1;
+                    sec1 -= (24*60*60);
+                }
+                else {
+                    precio = Double.parseDouble(precioS);
+                    registroEncontrado = true;
+                }
+            }
+            String divisa = getDivisa(ticker);
+            if(divisa.equals("EUR"))
+                return precio;
+            else if(divisa.equals("USD"))
+                return dolarAEuro(precio);
+            else throw new RuntimeException("Divisa no reconocida");
+        } catch (IOException e) {
+            throw new RuntimeException("Error con el sistema de stocks.");
+        }
     }
 
     public static String getTipoAccionETF(String ticker) {

@@ -1,6 +1,7 @@
 package Display;
 
 import Display.Display;
+import Otros.SistemaStocks;
 
 import java.util.Scanner;
 

@@ -72,6 +72,20 @@ public class AccionETF extends Activo {
         return importeVendido + participacionesTotales * valorParticipacion - comisiones;
     }
 
+    // devuelve el número de participaciones que tenías del activo para la fecha indicada
+    public double getParticipacionesFecha(Calendar calendar) {
+        double participaciones = 0;
+        for (CompraVentaAccionETF compraventa : compraventas) {
+            if(compraventa.getFecha().before(calendar) || compraventa.getFecha().equals(calendar)) {
+                int multiplicador = 1;
+                if(!compraventa.esCompra())
+                    multiplicador = -1;
+                participaciones += (compraventa.getParticipaciones() * multiplicador);
+            }
+        }
+        return participaciones;
+    }
+
     @Override
     public HashMap<String, String> getJSON() {
         HashMap<String, String> resultado = new HashMap<>();
@@ -81,22 +95,19 @@ public class AccionETF extends Activo {
         return resultado;
     }
 
+    // IMPORTANTE: no incluye el flujo de caja del importe actual, es decir, para cálculo de rentabilidades habría que añadir aparte el flujo del importe actual con la fecha actual
     @Override
-    public List getFlujosCaja() {
+        public List<HashMap<String, String>> getFlujosCaja() {
         List<HashMap<String, String>> resultado = new ArrayList<>();
         for (CompraVentaAccionETF compraventa : compraventas) {
             HashMap<String, String> flujo = new HashMap<>();
             flujo.put("Fecha", Utils.serializarFechaEuropea(compraventa.getFecha()));
-            double cantidad = compraventa.getPrecio() * compraventa.getParticipaciones();
+            double cantidad = compraventa.getPrecio() * compraventa.getParticipaciones() + compraventa.getComision();
             if (compraventa.esCompra())
                 cantidad *= -1;
             flujo.put("Flujo", String.valueOf(cantidad));
             resultado.add(flujo);
         }
-        HashMap<String, String> flujo = new HashMap<>();
-        flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
-        flujo.put("Flujo", String.valueOf(getImporteActual()));
-        resultado.add(flujo);
         return resultado;
     }
 
@@ -135,5 +146,9 @@ public class AccionETF extends Activo {
                 throw new RuntimeException("Tipo no reconocido para acción " + getNombre() + "y ticker " + ticker);
         }
         return resultado;
+    }
+
+    public String getTicker() {
+        return ticker;
     }
 }

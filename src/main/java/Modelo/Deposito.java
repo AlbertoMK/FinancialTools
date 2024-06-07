@@ -52,16 +52,26 @@ public class Deposito extends Activo{
                 totalRetribuciones += retribucion;
             }
             // calcular la cantidad acumulada. Para ello calculamos el tiempo desde la última retribución y sobre la TAE hacemos la estimacion
-            Calendar ultimaFecha = fechaContratacion;
-            for (Calendar fecha : retribuciones.keySet()) {
-                if(fecha.after(ultimaFecha)){
-                    ultimaFecha = fecha;
-                }
-            }
-            long tiempoTranscurrido = TimeUnit.MILLISECONDS.toDays(Calendar.getInstance().getTimeInMillis() - ultimaFecha.getTimeInMillis());
-            double acumulado = TAE / 100 * tiempoTranscurrido / 365 * desembolso;
+            double acumulado = getImporteAcumulado(Calendar.getInstance());
             return desembolso + totalRetribuciones + acumulado - comisionCompra;
         }
+    }
+
+    // Si calendar es anterior a la fecha de contratación del depósito o posterior a la fecha de venta, devuelve 0.
+    public double getImporteAcumulado(Calendar calendar) {
+        if(estaVendido() && calendar.after(venta.getFecha()))
+            return 0;
+        Calendar ultimaFecha = fechaContratacion;
+        for (Calendar fecha : retribuciones.keySet()) {
+            if(fecha.after(ultimaFecha)){
+                ultimaFecha = fecha;
+            }
+        }
+        long tiempoTranscurrido = TimeUnit.MILLISECONDS.toDays(calendar.getTimeInMillis() - ultimaFecha.getTimeInMillis());
+        if(tiempoTranscurrido < 0)
+            return 0;
+        double acumulado = TAE / 100 * tiempoTranscurrido / 365 * desembolso;
+        return acumulado;
     }
 
     public void vender(Calendar fecha, double importeVenta, double comision) {
@@ -92,6 +102,7 @@ public class Deposito extends Activo{
         return resultado;
     }
 
+    // Devuelve los flujos de compra, retribuciones y venta. NO DEVUELVE EL FLUJO DEL VALOR CALCULADO ACTUAL.
     @Override
     public List getFlujosCaja() {
         List<HashMap> resultado = new ArrayList<>();
@@ -105,15 +116,12 @@ public class Deposito extends Activo{
             map.put("Flujo", String.valueOf(retribuciones.get(fechaRetribucion)));
             resultado.add(map);
         }
-        Calendar ultimaFecha = null;
-        if (estaVendido())
-            ultimaFecha = venta.getFecha();
-        else
-            ultimaFecha = Calendar.getInstance();
-        map = new HashMap<>();
-        map.put("Fecha", Utils.serializarFechaEuropea(ultimaFecha));
-        map.put("Flujo", String.valueOf(getImporteActual()));
-        resultado.add(map);
+        if (estaVendido()) {
+           map = new HashMap<>();
+           map.put("Fecha", Utils.serializarFechaEuropea(venta.getFecha()));
+           map.put("Flujo", String.valueOf(venta.getImporteVenta() - venta.getComision()));
+           resultado.add(map);
+        }
         return resultado;
     }
 
