@@ -17,3 +17,6 @@
 - [ ] Maximizador de eficiencia siguiendo el modelo de Markowitz. Usa muchos cálculos y valoraciones para maximizar el cociente rentabilidad/riesgo. (muy difícil)
 - [ ] Simulador de Monte Carlo con parámetros como las acciones que vas a considerar, el tiempo pasado sobre el que basarse y el tiempo futuro que predecir. (difícil)
 - [ ] Construcción de robo-advisor siguiendo las tendencias de mercado, riesgo del usuario, diversificación... (se apoya mucho en los módulos mencionados anteriormente) (muy difícil)
+
+# Mejoras de rendimiento
+- [ ] Guardar una lista de festivos y antes de acceder a un valor en bolsa, comprobar que si el tipo no es criptomoneda (el mercado no cierra) y es festivo, sábado o domingo, modificar las fechas antes de acceder a los datos
