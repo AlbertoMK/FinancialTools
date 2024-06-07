@@ -44,8 +44,6 @@ public class SistemaStocks {
         }
     }
 
-    // TODO devuelve el precio del activo en la fecha indicada
-
     /**
      * Este método sigue los siguientes pasos:
      * 1. Si la fecha es de fin de semana, calcula la fecha del viernes anterior ya que el mercado está cerrado en fin de semana y no hay datos.
