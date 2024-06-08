@@ -21,3 +21,6 @@
 
 # Mejoras de rendimiento
 - [ ] Guardar una lista de festivos y antes de acceder a un valor en bolsa, comprobar que si el tipo no es criptomoneda (el mercado no cierra) y es festivo, sábado o domingo, modificar las fechas antes de acceder a los datos
+
+# Errores
+- No cuadra el valor de mis activos en dolares o con comisión con los reales. Ver cómo se está calculando los precioActual de AccionETF y si se hace bien la conversión dolar euro.
