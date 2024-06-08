@@ -21,6 +21,7 @@ public class Display {
         comandos.add(new VenderDepositoCmd());
         comandos.add(new RentabilidadCmd());
         comandos.add(new SectoresCmd());
+        comandos.add(new MostrarCmd());
     }
 
     public static Display getInstance() {

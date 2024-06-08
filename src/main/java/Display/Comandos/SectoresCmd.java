@@ -60,7 +60,7 @@ public class SectoresCmd extends Comando{
                 }
             }
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error con el parseo de las opciones");
         }
         return "";
     }
