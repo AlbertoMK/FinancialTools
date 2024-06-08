@@ -1,6 +1,7 @@
 - [ ] Buenas y malas decisiones (con parámetro para seleccionar cuantas decisiones mostrar) y otro opcional para no contar con los de precio 0. (fácil)
 - [x] Rentabilidad anualizada
-- [ ] Añadir filtro periodo a rentabilidad
+- [x] Añadir filtro periodo a rentabilidad
+- [x] Comando para mostrar cartera segmentada y valores actuales de cada activo
 - [ ] Calculadora interés compuesto
 - [ ] Calculadora valor presente
 - [ ] Calculadora de libertad financiera
