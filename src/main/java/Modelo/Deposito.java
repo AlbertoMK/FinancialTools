@@ -45,7 +45,7 @@ public class Deposito extends Activo{
     @Override
     public double getImporteActual() {
         if (estaVendido())
-            return venta.getImporteVenta() - comisionCompra - venta.getComision();
+            return venta.getImporteVenta();
         else {
             double totalRetribuciones = 0;
             for (double retribucion : retribuciones.values()) {
@@ -53,7 +53,7 @@ public class Deposito extends Activo{
             }
             // calcular la cantidad acumulada. Para ello calculamos el tiempo desde la última retribución y sobre la TAE hacemos la estimacion
             double acumulado = getImporteAcumulado(Calendar.getInstance());
-            return desembolso + totalRetribuciones + acumulado - comisionCompra;
+            return desembolso + totalRetribuciones + acumulado;
         }
     }
 

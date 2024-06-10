@@ -54,14 +54,13 @@ public class AccionETF extends Activo {
         return resultado;
     }
 
+    // Devuelve el valor de las participaciones ahora
     @Override
     public double getImporteActual() {
         double valorParticipacion = SistemaStocks.getPrecio(ticker);
-        double comisiones = 0;
         double participacionesTotales = 0;
         double importeVendido = 0;
         for (CompraVentaAccionETF compraVenta : compraventas) {
-            comisiones += compraVenta.getComision();
             if (compraVenta.esCompra())
                 participacionesTotales += compraVenta.getParticipaciones();
             else {
@@ -69,7 +68,7 @@ public class AccionETF extends Activo {
                 participacionesTotales -= compraVenta.getParticipaciones();
             }
         }
-        return importeVendido + participacionesTotales * valorParticipacion - comisiones;
+        return importeVendido + participacionesTotales * valorParticipacion;
     }
 
     // devuelve el número de participaciones que tenías del activo para la fecha indicada

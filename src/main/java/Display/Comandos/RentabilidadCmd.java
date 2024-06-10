@@ -102,7 +102,7 @@ public class RentabilidadCmd extends Comando {
                         AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
                         HashMap<String, String> flujo = new HashMap<>();
                         flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
-                        flujo.put("Flujo", String.valueOf(SistemaStocks.getPrecio(accion.getTicker()) * accion.getParticipacionesFecha(Calendar.getInstance())));
+                        flujo.put("Flujo", String.valueOf(accion.getImporteActual()));
                         flujos.add(flujo);
                     }
                 }
