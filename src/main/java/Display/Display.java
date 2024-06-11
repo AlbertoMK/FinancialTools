@@ -22,6 +22,7 @@ public class Display {
         comandos.add(new RentabilidadCmd());
         comandos.add(new SectoresCmd());
         comandos.add(new MostrarCmd());
+        comandos.add(new CalculadoraCmd());
     }
 
     public static Display getInstance() {

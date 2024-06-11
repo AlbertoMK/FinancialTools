@@ -14,7 +14,6 @@ public class ComprarAccionCmd extends Comando {
     Options opciones;
     boolean help;
     private int idAccion;
-    private String[] argumentos;
 
     public ComprarAccionCmd() {
         referencia = "comprarAccion";
@@ -25,23 +24,23 @@ public class ComprarAccionCmd extends Comando {
     @Override
     public String ejecutar(String[] args) {
         String resultado = "";
+        String[] argumentos;
 
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(opciones, args);
+            argumentos = cmd.getArgs();
             if (cmd.hasOption("h")) {
                 help = true;
             } else {
                 help = false;
+                if(argumentos.length != 4)
+                    throw new RuntimeException("Número de parámetros incorrecto.");
             }
-            argumentos = cmd.getArgs();
         } catch (ParseException e) {
-            throw new RuntimeException("Error en el parseo de los argumentos");
+            throw new RuntimeException("Error en el parseo de los argumentos.");
         }
 
-        if (!help && argumentos.length != 4) {
-            throw new RuntimeException("Número de parámetros incorrecto");
-        }
         if(!help) {
             try {
                 Double.parseDouble(argumentos[0]);
@@ -51,7 +50,6 @@ public class ComprarAccionCmd extends Comando {
             } catch (RuntimeException ex) {
                 throw new RuntimeException("Formato incorrecto de los argumentos.");
             }
-
             try {
                 List<HashMap<String, String>> activos = GestorAcciones.getInstance().getActivos();
                 int opcion = Display.selector(activos);
@@ -60,9 +58,15 @@ public class ComprarAccionCmd extends Comando {
             } catch (NumberFormatException ex) {
                 throw new RuntimeException("Error en la opción escogida");
             }
-        }
 
-        if (help) {
+            double participaciones = Double.parseDouble(argumentos[0]);
+            double precio = Double.parseDouble(argumentos[1]);
+            Calendar fecha = Utils.deserializarFecha(argumentos[2]);
+            double comision = Double.parseDouble(argumentos[3]);
+            GestorAcciones.getInstance().comprarAccion(idAccion, participaciones, precio, fecha, comision);
+            resultado = "Compra realizada con éxito.";
+        }
+        else {
             HelpFormatter formatter = new HelpFormatter() {
                 @Override
                 public void printHelp(String cmdLineSyntax, Options options) {
@@ -73,14 +77,6 @@ public class ComprarAccionCmd extends Comando {
                 }
             };
             formatter.printHelp("comprarAccion", opciones);
-        }
-        else {
-            double participaciones = Double.parseDouble(argumentos[0]);
-            double precio = Double.parseDouble(argumentos[1]);
-            Calendar fecha = Utils.deserializarFecha(argumentos[2]);
-            double comision = Double.parseDouble(argumentos[3]);
-            GestorAcciones.getInstance().comprarAccion(idAccion, participaciones, precio, fecha, comision);
-            resultado = "Compra realizada con éxito.";
         }
         return resultado;
     }
