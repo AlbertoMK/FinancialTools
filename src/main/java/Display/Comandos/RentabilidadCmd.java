@@ -22,17 +22,23 @@ public class RentabilidadCmd extends Comando {
     public RentabilidadCmd() {
         referencia = "rentabilidad";
         opciones = new Options();
-        OptionGroup primeraOpcion = new OptionGroup();
         Option o1 = new Option("h", "help", false, "Imprime la ayuda del comando");
+        opciones.addOption(o1);
+        OptionGroup tipoActivo = new OptionGroup();
         Option o2 = new Option("d", "depositos", false, "Muestra rentabilidad de los depósitos");
         Option o3 = new Option("a", "acciones", false, "Muestra rentabilidad de las acciones");
         Option o4 = new Option("t", "total", false, "Muestra rentabilidad de todos los activos");
-        primeraOpcion.addOption(o1);
-        primeraOpcion.addOption(o2);
-        primeraOpcion.addOption(o3);
-        primeraOpcion.addOption(o4);
-        opciones.addOptionGroup(primeraOpcion);
+        tipoActivo.addOption(o2);
+        tipoActivo.addOption(o3);
+        tipoActivo.addOption(o4);
+        opciones.addOptionGroup(tipoActivo);
 
+        OptionGroup temporalidad = new OptionGroup();
+        temporalidad.addOption(new Option("ytd", "año", false, "Calcula la rentabilidad desde el inicio del año actual"));
+        temporalidad.addOption(new Option("m", "mes", false, "Calcula la rentabilidad de los últimos 30 días"));
+        temporalidad.addOption(new Option("w", "semana", false, "Calcula la rentabilidad de los últimos 7 días"));
+        temporalidad.addOption(new Option("day", false, "Calcula la rentabilidad obtenida hoy"));
+        opciones.addOptionGroup(temporalidad);
         opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
     }
 
@@ -64,7 +70,27 @@ public class RentabilidadCmd extends Comando {
             anualizada = cmd.hasOption("y");
 
             String[] argumentos = cmd.getArgs();
-            if (argumentos.length == 0) {
+            if(cmd.hasOption("-day")) {
+                periodo1 = Calendar.getInstance();
+                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1);
+                periodo2 = Calendar.getInstance();
+            }
+            else if(cmd.hasOption("-w")){
+                periodo1 = Calendar.getInstance();
+                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 7);
+                periodo2 = Calendar.getInstance();
+            }
+            else if(cmd.hasOption("-m")){
+                periodo1 = Calendar.getInstance();
+                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 30);
+                periodo2 = Calendar.getInstance();
+            }
+            else if(cmd.hasOption("-ytd")) {
+                periodo1 = Calendar.getInstance();
+                periodo1.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.JANUARY, 1);
+                periodo2 = Calendar.getInstance();
+            }
+            else if (argumentos.length == 0) {
                 periodo1 = periodo2 = null;
             } else if (argumentos.length == 2) {
                 periodo1 = Utils.deserializarFecha(argumentos[0]);
@@ -80,9 +106,9 @@ public class RentabilidadCmd extends Comando {
                 public void printHelp(String cmdLineSyntax, Options options) {
                     String header = "Opciones disponibles:";
                     String footer = "\nEjemplos de uso:\n"
-                              + "  rentabilidad -a [-y] [fechaInicial fechaFinal]\n"
-                              + "  rentabilidad -d [-y] [fechaInicial fechaFinal]\n"
-                              + "  rentabilidad -t [-y] [fechaInicial fechaFinal]";
+                              + "  rentabilidad -a [-y] [fechaInicial fechaFinal | -day | -w | -m | -ytd]\n"
+                              + "  rentabilidad -d [-y] [fechaInicial fechaFinal | -day | -w | -m | -ytd]\n"
+                              + "  rentabilidad -t [-y] [fechaInicial fechaFinal | -day | -w | -m | -ytd]";
                     super.printHelp(cmdLineSyntax, header, options, footer, true);
                 }
             };

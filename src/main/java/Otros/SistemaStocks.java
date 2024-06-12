@@ -56,6 +56,9 @@ public class SistemaStocks {
      * @return Precio del activo indicado en la fecha indicada
      */
     public static double getPrecioFecha(String ticker, Calendar fecha) {
+        Calendar hoy = Calendar.getInstance();
+        if(fecha.get(Calendar.DAY_OF_MONTH) == hoy.get(Calendar.DAY_OF_MONTH) && fecha.get(Calendar.MONTH) == hoy.get(Calendar.MONTH) && fecha.get(Calendar.YEAR) == hoy.get(Calendar.YEAR))
+            return getPrecio(ticker);
         long sec1, sec2;
         if (getTipoAccionETF(ticker).equals("CRYPTOCURRENCY")){
             Calendar fechaUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));

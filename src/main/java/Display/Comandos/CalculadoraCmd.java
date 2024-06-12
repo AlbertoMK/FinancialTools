@@ -62,8 +62,7 @@ public class CalculadoraCmd extends Comando {
                 public void printHelp(String cmdLineSyntax, Options options) {
                     String header = "Opciones disponibles:";
                     String footer = "\nEjemplos de uso:\n"
-                              + "  calculadora -ic numPeriodos interés/periodo capitalInicial aportacion/periodo\n" +
-                              "  calculadora -ic -g numPeriodos interés/periodo capitalInicial aportacion/periodo";
+                              +"  calculadora -ic [-g] numPeriodos interés/periodo capitalInicial aportacion/periodo";
                     super.printHelp(cmdLineSyntax, header, options, footer, true);
                 }
             };

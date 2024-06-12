@@ -55,7 +55,6 @@ public class Display {
                         System.out.println(resutlado);
                 } catch (RuntimeException ex){
                     System.out.println(ex.getMessage());
-                    throw ex;
                 }
             }
             else {
