@@ -3,6 +3,7 @@ package Display.Comandos;
 import Modelo.AccionETF;
 import Modelo.Deposito;
 import Negocio.GestorAcciones;
+import Negocio.GestorActivos;
 import Negocio.GestorDepoitos;
 import Otros.SistemaStocks;
 import Otros.Utils;
@@ -10,7 +11,10 @@ import org.apache.commons.cli.*;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class RentabilidadCmd extends Comando {
 
@@ -124,11 +128,27 @@ public class RentabilidadCmd extends Comando {
             double diasTranscurridos;
             if (periodo1 == null) {
                 if(accion) {
+
+                    HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
                     for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
                         AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
+                        valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
+                            return accion.getImporteActual();
+                        }));
+                    }
+                    CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
+                    allOf.join();
+
+                    for(AccionETF accion : valorAcciones.keySet()) {
                         HashMap<String, String> flujo = new HashMap<>();
                         flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
-                        flujo.put("Flujo", String.valueOf(accion.getImporteActual()));
+                        try {
+                            flujo.put("Flujo", String.valueOf(valorAcciones.get(accion).get()));
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
                         flujos.add(flujo);
                     }
                 }
@@ -183,14 +203,31 @@ public class RentabilidadCmd extends Comando {
     }
 
     // Devuelve los flujos con los valores de las acciones en la fecha indicada
-    private List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
+    // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
+    private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
+        HashMap<Integer, CompletableFuture<Double>> valorAcciones = new HashMap<>();
         for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-            AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
-            double valorAccion = SistemaStocks.getPrecioFecha(accion.getTicker(), fecha);
+            String ticker = activo.get("ticker");
+            int id = Integer.parseInt(activo.get("id"));
+            valorAcciones.put(id, CompletableFuture.supplyAsync(() -> {
+                return SistemaStocks.getPrecioFecha(ticker, fecha);
+            }));
+        }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
+        allOf.join();
+
+        for(int id : valorAcciones.keySet()) {
+            AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(id);
             HashMap<String, String> flujo = new HashMap<>();
             flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
-            flujo.put("Flujo", String.valueOf(accion.getParticipacionesFecha(fecha) * valorAccion));
+            try {
+                flujo.put("Flujo", String.valueOf(accion.getParticipacionesFecha(fecha) * valorAcciones.get(id).get()));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
             resultado.add(flujo);
         }
         return resultado;
@@ -214,3 +251,4 @@ public class RentabilidadCmd extends Comando {
         return resultado;
     }
 }
+

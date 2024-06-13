@@ -2,10 +2,7 @@ package Display;
 
 import Display.Comandos.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Display {
 
