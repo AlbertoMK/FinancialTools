@@ -21,3 +21,4 @@
 
 # Mejoras de rendimiento
 - [ ] Guardar una lista de festivos y antes de acceder a un valor en bolsa, comprobar que si el tipo no es criptomoneda (el mercado no cierra) y es festivo, sábado o domingo, modificar las fechas antes de acceder a los datos
+- [ ] Al calcular la rentabilidad del segundo periodo, no volver a calcular desde el inicio y aprovecharse de lo que ya se ha calculado.
