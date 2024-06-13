@@ -12,6 +12,8 @@ import de.vandermeer.asciitable.AsciiTable;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class MostrarCmd extends Comando{
 
@@ -53,10 +55,27 @@ public class MostrarCmd extends Comando{
                 at.addRule();
                 at.addRow("Nombre", "Ticker", "Participaciones", "Valor");
                 at.addRule();
+
+                HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
                 for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-                    AccionETF accion = (AccionETF)GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
-                    at.addRow(accion.getNombre(), accion.getTicker(), String.format("%.6f", accion.getParticipacionesFecha(Calendar.getInstance())), String.format("%.3f", accion.getImporteActual()));
+                    AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
+                    valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
+                        return accion.getImporteActual();
+                    }));
                 }
+                CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
+                allOf.join();
+
+                for (AccionETF accion : valorAcciones.keySet()) {
+                    try {
+                        at.addRow(accion.getNombre(), accion.getTicker(), String.format("%.6f", accion.getParticipacionesFecha(Calendar.getInstance())), String.format("%.3f", valorAcciones.get(accion).get()));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
                 at.addRule();
                 at.getRenderer().setCWC(new CWC_FixedWidth().add(20).add(10).add(15).add(15));
                 String tableText = at.render();
