@@ -46,6 +46,21 @@ public class RentabilidadCmd extends Comando {
         opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
     }
 
+    // Devuelve los flujos con los valores de las acciones en la fecha indicada
+    // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
+    private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
+        List<HashMap<String, String>> resultado = new ArrayList<>();
+        HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesActuales();
+        for (int id : valorAcciones.keySet()) {
+            double participaciones = GestorAcciones.getInstance().getParticipacionesFecha(id, fecha);
+            HashMap<String, String> flujo = new HashMap<>();
+            flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
+            flujo.put("Flujo", String.valueOf(participaciones * valorAcciones.get(id)));
+            resultado.add(flujo);
+        }
+        return resultado;
+    }
+
     @Override
     public String ejecutar(String[] args) {
         String resultado = "";
@@ -58,43 +73,36 @@ public class RentabilidadCmd extends Comando {
                 deposito = true;
                 accion = false;
                 help = false;
-            }
-            else if (cmd.hasOption("a")) {
+            } else if (cmd.hasOption("a")) {
                 accion = true;
                 deposito = false;
                 help = false;
-            }
-            else if (cmd.hasOption("t")) {
+            } else if (cmd.hasOption("t")) {
                 accion = deposito = true;
                 help = false;
-            }
-            else
+            } else
                 throw new RuntimeException("La primera opción es obligatoria");
 
             anualizada = cmd.hasOption("y");
 
             String[] argumentos = cmd.getArgs();
-            if(cmd.hasOption("-day")) {
+            if (cmd.hasOption("-day")) {
                 periodo1 = Calendar.getInstance();
                 periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1);
                 periodo2 = Calendar.getInstance();
-            }
-            else if(cmd.hasOption("-w")){
+            } else if (cmd.hasOption("-w")) {
                 periodo1 = Calendar.getInstance();
                 periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 7);
                 periodo2 = Calendar.getInstance();
-            }
-            else if(cmd.hasOption("-m")){
+            } else if (cmd.hasOption("-m")) {
                 periodo1 = Calendar.getInstance();
                 periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 30);
                 periodo2 = Calendar.getInstance();
-            }
-            else if(cmd.hasOption("-ytd")) {
+            } else if (cmd.hasOption("-ytd")) {
                 periodo1 = Calendar.getInstance();
                 periodo1.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.JANUARY, 1);
                 periodo2 = Calendar.getInstance();
-            }
-            else if (argumentos.length == 0) {
+            } else if (argumentos.length == 0) {
                 periodo1 = periodo2 = null;
             } else if (argumentos.length == 2) {
                 periodo1 = Utils.deserializarFecha(argumentos[0]);
@@ -127,35 +135,19 @@ public class RentabilidadCmd extends Comando {
             double beneficio;
             double diasTranscurridos;
             if (periodo1 == null) {
-                if(accion) {
-
-                    HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
-                    for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-                        AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
-                        valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
-                            return accion.getImporteActual();
-                        }));
-                    }
-                    CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
-                    allOf.join();
-
-                    for(AccionETF accion : valorAcciones.keySet()) {
+                if (accion) {
+                    HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesActuales();
+                    for (Integer id : valorAcciones.keySet()) {
                         HashMap<String, String> flujo = new HashMap<>();
                         flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
-                        try {
-                            flujo.put("Flujo", String.valueOf(valorAcciones.get(accion).get()));
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        } catch (ExecutionException e) {
-                            throw new RuntimeException(e);
-                        }
+                        flujo.put("Flujo", String.valueOf(valorAcciones.get(id)));
                         flujos.add(flujo);
                     }
                 }
-                if(deposito) {
+                if (deposito) {
                     for (HashMap<String, String> activo : GestorDepoitos.getInstance().getActivos()) {
                         Deposito deposito = (Deposito) GestorDepoitos.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
-                        if(!deposito.estaVendido()) {
+                        if (!deposito.estaVendido()) {
                             HashMap<String, String> flujo = new HashMap<>();
                             flujo.put("Fecha", Utils.serializarFechaEuropea(Calendar.getInstance()));
                             flujo.put("Flujo", String.valueOf(deposito.getImporteActual()));
@@ -202,44 +194,13 @@ public class RentabilidadCmd extends Comando {
         return resultado;
     }
 
-    // Devuelve los flujos con los valores de las acciones en la fecha indicada
-    // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
-    private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
-        List<HashMap<String, String>> resultado = new ArrayList<>();
-        HashMap<Integer, CompletableFuture<Double>> valorAcciones = new HashMap<>();
-        for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-            String ticker = activo.get("ticker");
-            int id = Integer.parseInt(activo.get("id"));
-            valorAcciones.put(id, CompletableFuture.supplyAsync(() -> {
-                return SistemaStocks.getPrecioFecha(ticker, fecha);
-            }));
-        }
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
-        allOf.join();
-
-        for(int id : valorAcciones.keySet()) {
-            AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(id);
-            HashMap<String, String> flujo = new HashMap<>();
-            flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
-            try {
-                flujo.put("Flujo", String.valueOf(accion.getParticipacionesFecha(fecha) * valorAcciones.get(id).get()));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            }
-            resultado.add(flujo);
-        }
-        return resultado;
-    }
-
     private List<HashMap<String, String>> getFlujosDepositosFecha(Calendar fecha) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
         for (HashMap<String, String> activo : GestorDepoitos.getInstance().getActivos()) {
             Deposito deposito = (Deposito) GestorDepoitos.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
             double valorAcumulado = deposito.getImporteAcumulado(fecha);
             double valorNominalFecha;
-            if(deposito.getFechaContratacion().after(fecha) || (deposito.estaVendido() && deposito.getVenta().getFecha().before(fecha)))
+            if (deposito.getFechaContratacion().after(fecha) || (deposito.estaVendido() && deposito.getVenta().getFecha().before(fecha)))
                 valorNominalFecha = 0;
             else
                 valorNominalFecha = deposito.getDesembolso();

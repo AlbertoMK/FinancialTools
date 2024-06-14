@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class GestorAcciones extends GestorActivos {
 
@@ -62,6 +64,37 @@ public class GestorAcciones extends GestorActivos {
             }
         }
         return resultado;
+    }
+
+    /**
+     * Calcula concurrentemente el valor de todas las acciones.
+     * @return Diccionario donde la clave es el id de la acción y el valor, su importe actual
+     */
+    public HashMap<Integer, Double> getImportesActuales() {
+        HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
+        for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
+            AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
+            valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
+                return accion.getImporteActual();
+            }));
+        }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
+        allOf.join();
+
+        HashMap<Integer, Double> resultado = new HashMap<>();
+        for (AccionETF accion : valorAcciones.keySet()) {
+            try {
+                resultado.put(accion.getId(), valorAcciones.get(accion).get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("Error de concurrencia al obtener el valor de las acciones.");
+            }
+        }
+        return resultado;
+    }
+
+    public double getParticipacionesFecha(int idAccion, Calendar fecha) {
+        AccionETF accion = (AccionETF) getActivoById(idAccion);
+        return accion.getParticipacionesFecha(fecha);
     }
 
     @Override

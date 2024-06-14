@@ -1,4 +1,5 @@
 package Display.Comandos;
+
 import Modelo.AccionETF;
 import Modelo.Activo;
 import Modelo.Deposito;
@@ -12,13 +13,14 @@ import de.vandermeer.asciitable.AsciiTable;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class MostrarCmd extends Comando{
+public class MostrarCmd extends Comando {
 
-    private boolean help;
     Options opciones;
+    private boolean help;
 
     public MostrarCmd() {
         referencia = "mostrar";
@@ -46,9 +48,7 @@ public class MostrarCmd extends Comando{
                     }
                 };
                 formatter.printHelp("mostrar", opciones);
-            }
-
-            else {
+            } else {
                 AsciiTable at = new AsciiTable();
                 at.addRule();
                 at.addRow(null, null, null, "Acciones").setTextAlignment(TextAlignment.CENTER);
@@ -56,24 +56,12 @@ public class MostrarCmd extends Comando{
                 at.addRow("Nombre", "Ticker", "Participaciones", "Valor");
                 at.addRule();
 
-                HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
-                for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-                    AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
-                    valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
-                        return accion.getImporteActual();
-                    }));
-                }
-                CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
-                allOf.join();
-
-                for (AccionETF accion : valorAcciones.keySet()) {
-                    try {
-                        at.addRow(accion.getNombre(), accion.getTicker(), String.format("%.6f", accion.getParticipacionesFecha(Calendar.getInstance())), String.format("%.3f", valorAcciones.get(accion).get()));
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    }
+                HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesActuales();
+                List<HashMap<String, String>> acciones = GestorAcciones.getInstance().getActivos();
+                for (HashMap<String, String> accion : acciones) {
+                    double participaciones = GestorAcciones.getInstance().getParticipacionesFecha(Integer.parseInt(accion.get("id")), Calendar.getInstance());
+                    double valorAccion = valorAcciones.get(Integer.parseInt(accion.get("id")));
+                    at.addRow(accion.get("nombre"), accion.get("ticker"), String.format("%.6f", participaciones), String.format("%.3f", valorAccion));
                 }
 
                 at.addRule();
