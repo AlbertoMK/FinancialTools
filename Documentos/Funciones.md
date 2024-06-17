@@ -10,5 +10,5 @@ Estimado programador, aunque no lo creas, aquí hay mucho curro que hacer.
 - Capturación de excepciones.  
   Como decirlo... Digamos que hemos empezado a lo loco y le estamos dejando al usuario muchas maneras de romper el programa con sus estúpidos argumentos. (Sabemos que al usosaurio hay que dejárselo todo masticadito). Captura todo tipo de entrada que no deba ser válida, será un bien común.  
 - Tests, tests y más tests!  
-  Este programa está lleno de funciones complejas, que se modifican de vez en cuando y pueden tener serios errores de cálculo que haga que todo falle. Pero si tan solo tuvieramos unos tests que nos avisases... Caja negra, blanca y hasta azul si hacen falta. En este proyecto amamos los tests. <3  
-- Proximamente... Frontend 😶‍🌫️
+  Este programa está lleno de funciones complejas, que se modifican de vez en cuando y pueden tener serios errores de cálculo que haga que todo falle. Pero si tan solo tuvieramos unos tests que nos avisasen... Caja negra, blanca y hasta azul si hacen falta. En este proyecto amamos los tests. <3  
+- Próximamente... Frontend 😶‍🌫️
