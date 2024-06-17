@@ -1,4 +1,4 @@
-# Normas de convivencia  
+# Normas de convivencia     
 **Sabemos que el trabajo en equipo es genial (¿No es así?). Pero puede dar conflictos y retrasarlo todo. Para ello, vamos a definir una serie de reglas para vivir en paz y armonía.**  
 1. Comentarios  
    Cuando implementes una nueva funcionalidad, corrijas un error, etc. Cúrrate una buena descripción de los commits. Cuando hayas terminado tu trabajo y hagas el **PULL REQUEST** dejános claro a  todos cuál ha sido tu trabajo y objetivos. Así será mucho más fácil de leer, entender y aceptarlo en la rama principal.
