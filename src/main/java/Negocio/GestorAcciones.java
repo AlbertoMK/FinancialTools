@@ -48,12 +48,49 @@ public class GestorAcciones extends GestorActivos {
      * también se están contabilizando en el cálculo de los pesos de los sectores.
      */
     public HashMap<String, Double> getPorcentajeSectores() {
-        double valorCartera = getValorCartera();
         HashMap<String, Double> resultado = new HashMap<>();
+        HashMap<Integer, Double>[] valorAcciones = new HashMap[1];
+        HashMap<AccionETF, CompletableFuture<HashMap<String, Double>>> porcentajeSectores = new HashMap<>();
+        Thread th1 = new Thread() {
+            public void run(){
+                valorAcciones[0] = getImportesActuales();
+            }
+        };
+
+        Thread th2 = new Thread() {
+            public void run() {
+                for (Activo activo : listaActivos) {
+                    AccionETF accion = (AccionETF) activo;
+                    porcentajeSectores.put(accion, CompletableFuture.supplyAsync(() -> {
+                        return accion.getPorcentajeSectores();
+                    }));
+                }
+                CompletableFuture<Void> allOf = CompletableFuture.allOf(porcentajeSectores.values().toArray(new CompletableFuture[0]));
+                allOf.join();
+            }
+        };
+        try {
+            th1.start();
+            th2.start();
+            th1.join();
+            th2.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Error con la concurrencia al calcular los sectores.");
+        }
+        double valorCartera = 0;
+        for (int id : valorAcciones[0].keySet()) {
+            valorCartera += valorAcciones[0].get(id);
+        }
+
         for(Activo activo : listaActivos) {
-            double valorActivo = activo.getImporteActual();
+            double valorActivo = valorAcciones[0].get(activo.getId());
             AccionETF accion = (AccionETF) activo;
-            HashMap<String, Double> sectores = accion.getPorcentajeSectores();
+            HashMap<String, Double> sectores = null;
+            try {
+                sectores = porcentajeSectores.get(accion).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("Error con la concurrencia al calcular los sectores.");
+            }
             for (String sector : sectores.keySet()) {
                 if(resultado.containsKey(sector)){
                     resultado.put(sector, resultado.get(sector) + sectores.get(sector) * (valorActivo / valorCartera));
@@ -72,8 +109,8 @@ public class GestorAcciones extends GestorActivos {
      */
     public HashMap<Integer, Double> getImportesActuales() {
         HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
-        for (HashMap<String, String> activo : GestorAcciones.getInstance().getActivos()) {
-            AccionETF accion = (AccionETF) GestorAcciones.getInstance().getActivoById(Integer.parseInt(activo.get("id")));
+        for (Activo activo : listaActivos) {
+            AccionETF accion = (AccionETF) activo;
             valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
                 return accion.getImporteActual();
             }));
