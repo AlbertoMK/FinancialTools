@@ -1,4 +1,4 @@
-### Pasos para poder usar el proyecto
+# Pasos para poder usar el proyecto
 1. Clona el proyecto con la url http  
 2. Abre una Query SQL en tu IDE  
 3. Pega el siguiente código SQL para crear tu base de datos vacía
