@@ -64,3 +64,4 @@
    Si tienes problemas con la consola SQL (inténtalo antes por tu cuenta melón), puedes pedir ayuda y se te pasará el fichero con la base de datos vacía para que puedas trabajar.  
    4. Crea tu rama a partir de la rama master y... ¡A programar!  
    5. Cuando creas que has terminado tu super cambio, puedes hacer una solicitud para unirla a la rama principal del proyecto y que el resto contemos con él en nuestro programa. Si todo ha ido bien, en 24h estará incorporada!
+   6. Todo listo? Te veo en [qué cosas puedo hacer para mejorar el proyecto?](Funciones.md)
