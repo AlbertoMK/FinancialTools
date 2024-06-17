@@ -23,3 +23,5 @@
 - [ ] Guardar una lista de festivos y antes de acceder a un valor en bolsa, comprobar que si el tipo no es criptomoneda (el mercado no cierra) y es festivo, sábado o domingo, modificar las fechas antes de acceder a los datos
 - [ ] Al calcular la rentabilidad del segundo periodo, no volver a calcular desde el inicio y aprovecharse de lo que ya se ha calculado.
 - [ ] Modificar la función de getSector del script de python para que reciba un conjunto de tickers y así hacerlo más rápido. Imprimir el resultado en formato JSON
+
+# Errores por corregir
