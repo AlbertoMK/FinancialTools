@@ -26,3 +26,4 @@
 - [ ] Modificar la función de getSector del script de python para que reciba un conjunto de tickers y así hacerlo más rápido. Imprimir el resultado en formato JSON
 
 # Errores por corregir
+
