@@ -30,7 +30,7 @@ public class Utils {
         return resultado;
     }
 
-    public static java.sql.Date CalendarToSQLDate(Calendar calendar){
+    public static java.sql.Date calendarToSQLDate(Calendar calendar){
         return java.sql.Date.valueOf(serializarFechaAmericana(calendar));
     }
 

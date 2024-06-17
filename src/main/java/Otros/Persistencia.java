@@ -23,7 +23,7 @@ public class Persistencia {
             statement.setLong(1, id);
             statement.setDouble(2, desembolso);
             statement.setDouble(3, tae);
-            statement.setDate(4, Utils.CalendarToSQLDate(fechaContratacion));
+            statement.setDate(4, Utils.calendarToSQLDate(fechaContratacion));
             statement.setDouble(5, comisionCompra);
             statement.setString(6, nombre);
             statement.setNull(7, Types.INTEGER);
@@ -42,7 +42,7 @@ public class Persistencia {
 
         String sql = "INSERT INTO VentaDeposito (fecha, comision, importeVenta) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setDate(1, Utils.CalendarToSQLDate(deposito.getVenta().getFecha()));
+            statement.setDate(1, Utils.calendarToSQLDate(deposito.getVenta().getFecha()));
             statement.setDouble(2, deposito.getVenta().getComision());
             statement.setDouble(3, deposito.getVenta().getImporteVenta());
             statement.executeUpdate();
@@ -69,7 +69,7 @@ public class Persistencia {
         Connection connection = abrirConexion();
         String sql = "INSERT INTO RetribucionDeposito (fecha, importe, deposito_id) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setDate(1, Utils.CalendarToSQLDate(fecha));
+            statement.setDate(1, Utils.calendarToSQLDate(fecha));
             statement.setDouble(2, importe);
             statement.setLong(3, idDeposito);
             statement.executeUpdate();
@@ -213,7 +213,7 @@ public class Persistencia {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setDouble(1, participaciones);
             preparedStatement.setDouble(2, precio);
-            preparedStatement.setDate(3, Utils.CalendarToSQLDate(fecha));
+            preparedStatement.setDate(3, Utils.calendarToSQLDate(fecha));
             preparedStatement.setDouble(4, comision);
             preparedStatement.setBoolean(5, esCompra);
             preparedStatement.setInt(6, accionId);
@@ -294,8 +294,6 @@ public class Persistencia {
         }
     }
 
-    // ------------------------------------------------- CUENTAS ---------------------------------------------------
-
     // ------------------------------------------------- OTROS ---------------------------------------------------
 
     private static Connection abrirConexion() {
@@ -347,4 +345,3 @@ public class Persistencia {
         }
     }
 }
-

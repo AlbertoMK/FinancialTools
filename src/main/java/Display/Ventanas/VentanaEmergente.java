@@ -5,8 +5,8 @@ import java.awt.*;
 
 public class VentanaEmergente extends JFrame {
 
-    public VentanaEmergente(Component comp) {
-        add(comp);
+    public VentanaEmergente(Component componente) {
+        add(componente);
         pack();
         setVisible(true);
     }

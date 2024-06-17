@@ -90,6 +90,12 @@ public class Display {
         return resultado;
     }
 
+    /**
+     * Comienza un proceso en el que al usuario se le muestra la lista list para que seleccione un elemento. Devuelve la posición de la lista seleccionada
+     * @param list Lista de la que seleccionar un elemento
+     * @return índice (0-indexed) del elemento seleccionado por el usuario
+     * @throws NumberFormatException
+     */
     public static int selector(List<?> list) throws NumberFormatException {
         System.out.println("Escoge una opción");
         int contador = 1;

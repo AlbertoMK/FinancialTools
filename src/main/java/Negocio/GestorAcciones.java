@@ -92,6 +92,11 @@ public class GestorAcciones extends GestorActivos {
         return resultado;
     }
 
+    /**
+     * @param idAccion Id de la acción para el cual se quiere conocer el número de participaciones
+     * @param fecha Fecha para la cual se quiere conocer el número de participaciones
+     * @return Número de participaciones que se tenía de la acción en la fecha indicada
+     */
     public double getParticipacionesFecha(int idAccion, Calendar fecha) {
         AccionETF accion = (AccionETF) getActivoById(idAccion);
         return accion.getParticipacionesFecha(fecha);
