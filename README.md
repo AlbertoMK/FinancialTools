@@ -1,9 +1,6 @@
 ### Pasos para poder usar el proyecto
-1. Clona el proyecto:
-   ``` git
-   git clone https://github.com/AlbertoMK/FinancialTools.git
-   ```
-2. Abre la una Query SQL en tu IDE  
+1. Clona el proyecto con la url http  
+2. Abre una Query SQL en tu IDE  
 3. Pega el siguiente código SQL para crear tu base de datos vacía
    ``` sql
    create table AccionETF
@@ -64,3 +61,6 @@
         references Deposito
    );
    ```
+   Si tienes problemas con la consola SQL (inténtalo antes por tu cuenta melón), puedes pedir ayuda y se te pasará el fichero con la base de datos vacía para que puedas trabajar.  
+   4. Crea tu rama a partir de la rama master y... ¡A programar!  
+   5. Cuando creas que has terminado tu super cambio, puedes hacer una solicitud para unirla a la rama principal del proyecto y que el resto contemos con él en nuestro programa. Si todo ha ido bien, en 24h estará incorporada!
