@@ -1,5 +1,6 @@
 package Otros;
 
+import Negocio.GestorAcciones;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -60,7 +61,7 @@ public class SistemaStocks {
         if(fecha.get(Calendar.DAY_OF_MONTH) == hoy.get(Calendar.DAY_OF_MONTH) && fecha.get(Calendar.MONTH) == hoy.get(Calendar.MONTH) && fecha.get(Calendar.YEAR) == hoy.get(Calendar.YEAR))
             return getPrecio(ticker);
         long sec1, sec2;
-        if (getTipoAccionETF(ticker).equals("CRYPTOCURRENCY")){
+        if (Persistencia.getTipo(GestorAcciones.getInstance().getAccionByTicker(ticker).getId()).equals("CRYPTOCURRENCY")){
             Calendar fechaUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             fechaUTC.set(fecha.get(Calendar.YEAR), fecha.get(Calendar.MONTH), fecha.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
             sec1 = sec2 = fechaUTC.getTimeInMillis()/1000;
@@ -102,31 +103,6 @@ public class SistemaStocks {
             else throw new RuntimeException("Divisa no reconocida");
         } catch (IOException e) {
             throw new RuntimeException("Error con el sistema de stocks.");
-        }
-    }
-
-    public static String getTipoAccionETF(String ticker) {
-        try {
-            // Ejecutar el script de Python
-            Process proceso = Runtime.getRuntime().exec("python Precio.py getTipo " + ticker);
-            // Leer la salida del script de Python
-            BufferedReader reader = new BufferedReader(new InputStreamReader(proceso.getInputStream()));
-            return reader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException("Fallo con el sistema de stocks");
-        }
-    }
-
-    // Devuelve el sector en el que compite una empresa. No llamar al método con tickers que no sean de empresas.
-    public static String getSectorAccion(String ticker) {
-        try {
-            // Ejecutar el script de Python
-            Process proceso = Runtime.getRuntime().exec("python Precio.py getSector " + ticker);
-            // Leer la salida del script de Python
-            BufferedReader reader = new BufferedReader(new InputStreamReader(proceso.getInputStream()));
-            return reader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException("Fallo con el sistema de stocks");
         }
     }
 

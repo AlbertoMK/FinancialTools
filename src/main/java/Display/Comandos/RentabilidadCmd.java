@@ -50,7 +50,7 @@ public class RentabilidadCmd extends Comando {
     // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
     private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
-        HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesActuales();
+        HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesFecha(fecha);
         for (int id : valorAcciones.keySet()) {
             double participaciones = GestorAcciones.getInstance().getParticipacionesFecha(id, fecha);
             HashMap<String, String> flujo = new HashMap<>();
@@ -96,7 +96,7 @@ public class RentabilidadCmd extends Comando {
                 periodo2 = Calendar.getInstance();
             } else if (cmd.hasOption("-m")) {
                 periodo1 = Calendar.getInstance();
-                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 30);
+                periodo1.set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) - 1);
                 periodo2 = Calendar.getInstance();
             } else if (cmd.hasOption("-ytd")) {
                 periodo1 = Calendar.getInstance();

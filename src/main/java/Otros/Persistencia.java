@@ -260,6 +260,40 @@ public class Persistencia {
         }
     }
 
+    public static String getSector(int idAccion) {
+        Connection connection = abrirConexion();
+        String sql = "SELECT sector FROM Sectores WHERE id_accion = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, idAccion);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
+
+    public static String getTipo(int idAccion) {
+        Connection connection = abrirConexion();
+        String sql = "SELECT tipo FROM AccionETF WHERE id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, idAccion);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            cerrarConexion(connection);
+        }
+    }
+
     private static List<HashMap<String, String>> getCompraVentas(int idAccion) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
         Connection connection = abrirConexion();

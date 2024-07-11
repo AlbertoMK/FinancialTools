@@ -4,6 +4,7 @@ import Modelo.AccionETF;
 import Modelo.Activo;
 import Modelo.CompraVentaAccionETF;
 import Otros.Persistencia;
+import Otros.SistemaStocks;
 import Otros.Utils;
 
 import java.util.ArrayList;
@@ -49,41 +50,25 @@ public class GestorAcciones extends GestorActivos {
      */
     public HashMap<String, Double> getPorcentajeSectores() {
         HashMap<String, Double> resultado = new HashMap<>();
-        HashMap<Integer, Double>[] valorAcciones = new HashMap[1];
+        HashMap<Integer, Double> valorAcciones = getImportesActuales();
         HashMap<AccionETF, CompletableFuture<HashMap<String, Double>>> porcentajeSectores = new HashMap<>();
-        Thread th1 = new Thread() {
-            public void run(){
-                valorAcciones[0] = getImportesActuales();
-            }
-        };
 
-        Thread th2 = new Thread() {
-            public void run() {
-                for (Activo activo : listaActivos) {
-                    AccionETF accion = (AccionETF) activo;
-                    porcentajeSectores.put(accion, CompletableFuture.supplyAsync(() -> {
-                        return accion.getPorcentajeSectores();
-                    }));
-                }
-                CompletableFuture<Void> allOf = CompletableFuture.allOf(porcentajeSectores.values().toArray(new CompletableFuture[0]));
-                allOf.join();
-            }
-        };
-        try {
-            th1.start();
-            th2.start();
-            th1.join();
-            th2.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Error con la concurrencia al calcular los sectores.");
+        for (Activo activo : listaActivos) {
+            AccionETF accion = (AccionETF) activo;
+            porcentajeSectores.put(accion, CompletableFuture.supplyAsync(() -> {
+                return accion.getPorcentajeSectores();
+            }));
         }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(porcentajeSectores.values().toArray(new CompletableFuture[0]));
+        allOf.join();
+
         double valorCartera = 0;
-        for (int id : valorAcciones[0].keySet()) {
-            valorCartera += valorAcciones[0].get(id);
+        for (int id : valorAcciones.keySet()) {
+            valorCartera += valorAcciones.get(id);
         }
 
         for(Activo activo : listaActivos) {
-            double valorActivo = valorAcciones[0].get(activo.getId());
+            double valorActivo = valorAcciones.get(activo.getId());
             AccionETF accion = (AccionETF) activo;
             HashMap<String, Double> sectores = null;
             try {
@@ -129,6 +114,28 @@ public class GestorAcciones extends GestorActivos {
         return resultado;
     }
 
+    public HashMap<Integer, Double> getImportesFecha(Calendar calendar) {
+        HashMap<AccionETF, CompletableFuture<Double>> valorAcciones = new HashMap<>();
+        for (Activo activo : listaActivos) {
+            AccionETF accion = (AccionETF) activo;
+            valorAcciones.put(accion, CompletableFuture.supplyAsync(() -> {
+                return SistemaStocks.getPrecioFecha(accion.getTicker(), calendar);
+            }));
+        }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(valorAcciones.values().toArray(new CompletableFuture[0]));
+        allOf.join();
+
+        HashMap<Integer, Double> resultado = new HashMap<>();
+        for (AccionETF accion : valorAcciones.keySet()) {
+            try {
+                resultado.put(accion.getId(), valorAcciones.get(accion).get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("Error de concurrencia al obtener el valor de las acciones.");
+            }
+        }
+        return resultado;
+    }
+
     /**
      * @param idAccion Id de la acción para el cual se quiere conocer el número de participaciones
      * @param fecha Fecha para la cual se quiere conocer el número de participaciones
@@ -137,6 +144,15 @@ public class GestorAcciones extends GestorActivos {
     public double getParticipacionesFecha(int idAccion, Calendar fecha) {
         AccionETF accion = (AccionETF) getActivoById(idAccion);
         return accion.getParticipacionesFecha(fecha);
+    }
+
+    public AccionETF getAccionByTicker(String ticker) {
+        for (Activo activo : listaActivos) {
+            AccionETF accion = (AccionETF) activo;
+            if(accion.getTicker().equals(ticker))
+                return accion;
+        }
+        return null;
     }
 
     @Override

@@ -114,7 +114,7 @@ public class AccionETF extends Activo {
      * @return HashMap con los sectores como clave y el porcentaje de peso como valor
      */
     public HashMap<String, Double> getPorcentajeSectores() {
-        String tipo = SistemaStocks.getTipoAccionETF(ticker);
+        String tipo = Persistencia.getTipo(getId());
         HashMap<String, Double> resultado = new HashMap<>();
         switch (tipo) {
             case "ETF":
@@ -136,7 +136,7 @@ public class AccionETF extends Activo {
                 }
                 break;
             case "EQUITY":
-                resultado.put(SistemaStocks.getSectorAccion(ticker), 100.0);
+                resultado.put(Persistencia.getSector(getId()), 100.0);
                 break;
             case "CRYPTOCURRENCY":
                 resultado.put("Crypto", 100.0);
