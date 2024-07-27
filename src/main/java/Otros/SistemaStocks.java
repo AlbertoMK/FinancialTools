@@ -56,6 +56,7 @@ public class SistemaStocks {
      * @param fecha Fecha para la cual se quiere calcular el precio
      * @return Precio del activo indicado en la fecha indicada
      */
+
     public static double getPrecioFecha(String ticker, Calendar fecha) {
         Calendar hoy = Calendar.getInstance();
         if(fecha.get(Calendar.DAY_OF_MONTH) == hoy.get(Calendar.DAY_OF_MONTH) && fecha.get(Calendar.MONTH) == hoy.get(Calendar.MONTH) && fecha.get(Calendar.YEAR) == hoy.get(Calendar.YEAR))

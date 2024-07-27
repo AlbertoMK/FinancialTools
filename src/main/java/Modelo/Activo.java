@@ -19,7 +19,7 @@ public abstract class Activo {
 
     public abstract HashMap<String, String> getJSON();
 
-    public abstract List getFlujosCaja();
+    public abstract List getFlujosCaja(boolean eliminarRegalos);
 
     public String getNombre() {
         return nombre;

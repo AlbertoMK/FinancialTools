@@ -26,10 +26,10 @@ public abstract class GestorActivos {
         return Persistencia.getSiguienteId();
     }
 
-    public List<HashMap<String, String>> getFlujosCaja() {
+    public List<HashMap<String, String>> getFlujosCaja(boolean eliminarRegalos) {
         ArrayList<HashMap<String, String>> resultado = new ArrayList<>();
         for(Activo activo : listaActivos) {
-            resultado.addAll(activo.getFlujosCaja());
+            resultado.addAll(activo.getFlujosCaja(eliminarRegalos));
         }
         return resultado;
     }

@@ -21,7 +21,7 @@ public class RentabilidadCmd extends Comando {
     Options opciones;
     boolean accion, deposito, help;
     Calendar periodo1, periodo2;
-    boolean anualizada;
+    boolean anualizada, eliminarRegalos;
 
     public RentabilidadCmd() {
         referencia = "rentabilidad";
@@ -43,22 +43,9 @@ public class RentabilidadCmd extends Comando {
         temporalidad.addOption(new Option("w", "semana", false, "Calcula la rentabilidad de los últimos 7 días"));
         temporalidad.addOption(new Option("day", false, "Calcula la rentabilidad obtenida hoy"));
         opciones.addOptionGroup(temporalidad);
-        opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
-    }
 
-    // Devuelve los flujos con los valores de las acciones en la fecha indicada
-    // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
-    private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
-        List<HashMap<String, String>> resultado = new ArrayList<>();
-        HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesFecha(fecha);
-        for (int id : valorAcciones.keySet()) {
-            double participaciones = GestorAcciones.getInstance().getParticipacionesFecha(id, fecha);
-            HashMap<String, String> flujo = new HashMap<>();
-            flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
-            flujo.put("Flujo", String.valueOf(participaciones * valorAcciones.get(id)));
-            resultado.add(flujo);
-        }
-        return resultado;
+        opciones.addOption(new Option("r", "eliminar regalos", false, "No tiene en cuenta los regalos en las acciones y fondos indexados para el cálculo"));
+        opciones.addOption(new Option("y", "anualizada", false, "Calcula la rentabilidad anualizada del periodo indicado"));
     }
 
     @Override
@@ -84,30 +71,8 @@ public class RentabilidadCmd extends Comando {
                 throw new RuntimeException("La primera opción es obligatoria");
 
             anualizada = cmd.hasOption("y");
-
-            String[] argumentos = cmd.getArgs();
-            if (cmd.hasOption("-day")) {
-                periodo1 = Calendar.getInstance();
-                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1);
-                periodo2 = Calendar.getInstance();
-            } else if (cmd.hasOption("-w")) {
-                periodo1 = Calendar.getInstance();
-                periodo1.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 7);
-                periodo2 = Calendar.getInstance();
-            } else if (cmd.hasOption("-m")) {
-                periodo1 = Calendar.getInstance();
-                periodo1.set(Calendar.MONTH, Calendar.getInstance().get(Calendar.MONTH) - 1);
-                periodo2 = Calendar.getInstance();
-            } else if (cmd.hasOption("-ytd")) {
-                periodo1 = Calendar.getInstance();
-                periodo1.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.JANUARY, 1);
-                periodo2 = Calendar.getInstance();
-            } else if (argumentos.length == 0) {
-                periodo1 = periodo2 = null;
-            } else if (argumentos.length == 2) {
-                periodo1 = Utils.deserializarFecha(argumentos[0]);
-                periodo2 = Utils.deserializarFecha(argumentos[1]);
-            } else throw new RuntimeException("Cantidad de argumentos inválida");
+            eliminarRegalos = cmd.hasOption("r");
+            establecerPeriodos(cmd);
         } catch (ParseException ex) {
             throw new RuntimeException("Error en el parseo de los argumentos");
         }
@@ -125,12 +90,15 @@ public class RentabilidadCmd extends Comando {
                 }
             };
             formatter.printHelp("rentabilidad", opciones);
-        } else {
+        }
+
+        else {
             List<HashMap<String, String>> flujos = new ArrayList<>();
             if (deposito)
-                flujos.addAll(GestorDepoitos.getInstance().getFlujosCaja());
+                flujos.addAll(GestorDepoitos.getInstance().getFlujosCaja(eliminarRegalos));
             if (accion)
-                flujos.addAll(GestorAcciones.getInstance().getFlujosCaja());
+                flujos.addAll(GestorAcciones.getInstance().getFlujosCaja(eliminarRegalos));
+
             double importeInicial;
             double beneficio;
             double diasTranscurridos;
@@ -194,6 +162,32 @@ public class RentabilidadCmd extends Comando {
         return resultado;
     }
 
+    private void establecerPeriodos(CommandLine cmd) {
+        String[] argumentos = cmd.getArgs();
+        if (cmd.hasOption("-day")) {
+            periodo1 = Calendar.getInstance();
+            periodo1.add(Calendar.DAY_OF_MONTH, -1);
+            periodo2 = Calendar.getInstance();
+        } else if (cmd.hasOption("-w")) {
+            periodo1 = Calendar.getInstance();
+            periodo1.add(Calendar.DAY_OF_MONTH, -7);
+            periodo2 = Calendar.getInstance();
+        } else if (cmd.hasOption("-m")) {
+            periodo1 = Calendar.getInstance();
+            periodo1.add(Calendar.MONTH, -1);
+            periodo2 = Calendar.getInstance();
+        } else if (cmd.hasOption("-ytd")) {
+            periodo1 = Calendar.getInstance();
+            periodo1.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.JANUARY, 1);
+            periodo2 = Calendar.getInstance();
+        } else if (argumentos.length == 0) {
+            periodo1 = periodo2 = null;
+        } else if (argumentos.length == 2) {
+            periodo1 = Utils.deserializarFecha(argumentos[0]);
+            periodo2 = Utils.deserializarFecha(argumentos[1]);
+        } else throw new RuntimeException("Cantidad de argumentos inválida");
+    }
+
     private List<HashMap<String, String>> getFlujosDepositosFecha(Calendar fecha) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
         for (HashMap<String, String> activo : GestorDepoitos.getInstance().getActivos()) {
@@ -207,6 +201,21 @@ public class RentabilidadCmd extends Comando {
             HashMap<String, String> flujo = new HashMap<>();
             flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
             flujo.put("Flujo", String.valueOf(valorAcumulado + valorNominalFecha));
+            resultado.add(flujo);
+        }
+        return resultado;
+    }
+
+    // Devuelve los flujos con los valores de las acciones en la fecha indicada
+    // Accede a los precios de manera concurrente para dividir entre 4 el tiempo de ejecución
+    private static List<HashMap<String, String>> getFlujosAccionesFecha(Calendar fecha) {
+        List<HashMap<String, String>> resultado = new ArrayList<>();
+        HashMap<Integer, Double> valorAcciones = GestorAcciones.getInstance().getImportesFecha(fecha);
+        for (int id : valorAcciones.keySet()) {
+            double participaciones = GestorAcciones.getInstance().getParticipacionesFecha(id, fecha);
+            HashMap<String, String> flujo = new HashMap<>();
+            flujo.put("Fecha", Utils.serializarFechaEuropea(fecha));
+            flujo.put("Flujo", String.valueOf(participaciones * valorAcciones.get(id)));
             resultado.add(flujo);
         }
         return resultado;

@@ -103,8 +103,9 @@ public class Deposito extends Activo{
     }
 
     // Devuelve los flujos de compra, retribuciones y venta. NO DEVUELVE EL FLUJO DEL VALOR CALCULADO ACTUAL.
+    // ACTUALMENTE EL PARÁMETRO eliminarRegalos no tiene efecto en depósitos
     @Override
-    public List getFlujosCaja() {
+    public List getFlujosCaja(boolean eliminarRegalos) {
         List<HashMap> resultado = new ArrayList<>();
         HashMap<String, String> map = new HashMap<>();
         map.put("Fecha", Utils.serializarFechaEuropea(fechaContratacion));

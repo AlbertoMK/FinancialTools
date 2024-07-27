@@ -96,7 +96,7 @@ public class AccionETF extends Activo {
 
     // IMPORTANTE: no incluye el flujo de caja del importe actual, es decir, para cálculo de rentabilidades habría que añadir aparte el flujo del importe actual con la fecha actual
     @Override
-        public List<HashMap<String, String>> getFlujosCaja() {
+        public List<HashMap<String, String>> getFlujosCaja(boolean eliminarRegalos) {
         List<HashMap<String, String>> resultado = new ArrayList<>();
         for (CompraVentaAccionETF compraventa : compraventas) {
             HashMap<String, String> flujo = new HashMap<>();
@@ -104,6 +104,15 @@ public class AccionETF extends Activo {
             double cantidad = compraventa.getPrecio() * compraventa.getParticipaciones() + compraventa.getComision();
             if (compraventa.esCompra())
                 cantidad *= -1;
+            if (eliminarRegalos && compraventa.esCompra() && compraventa.getPrecio() == 0) {
+                HashMap<String, String> flujoExtra = new HashMap<>();
+                Calendar c = (Calendar) compraventa.getFecha().clone();
+                c.add(Calendar.MINUTE, 1);
+                double precio = SistemaStocks.getPrecioFecha(ticker, compraventa.getFecha());
+                flujoExtra.put("Fecha", Utils.serializarFechaEuropea(c));
+                flujoExtra.put("Flujo", String.valueOf(-precio * compraventa.getParticipaciones()));
+                resultado.add(flujoExtra);
+            }
             flujo.put("Flujo", String.valueOf(cantidad));
             resultado.add(flujo);
         }
