@@ -1,0 +1,18 @@
+<!-- HTML -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Líneas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chart-container">
+        <svg id="line-chart" width="700" height="500" data-points='[[1, 10], [2, 15], [3, 12], [4, 22], [5, 31], [6, 27], [7,43], [8,20], [9, 40]]'></svg>
+        <div id="tooltip" class="tooltip"></div>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+   	<script src="chart.js"></script>
+    </div>
+</body>
+</html>
