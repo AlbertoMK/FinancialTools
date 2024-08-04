@@ -1,0 +1,165 @@
+.menu {
+    filter: url("#shadowed-goo");
+    -webkit-filter: url("#shadowed-goo");
+    text-align: center;
+    box-sizing: border-box;
+    position: fixed; /* Mantiene el menú fijo en el margen izquierdo */
+    left: 0;
+    top: 0;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    width: 100px; /* Ancho del sidebar */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    align-items: flex-start; /* Alineación de los elementos dentro del sidebar */
+    padding-top: 20px; /* Espaciado superior */
+    padding-left: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item, .menu-open-button {
+    margin-top: 15px;
+    background: steelblue;
+    border-radius: 100%;
+    width: 64px; /* Reducido un 20% desde 80px */
+    height: 64px; /* Reducido un 20% desde 80px */
+    margin-left: -32px; /* Ajustado para centrar */
+    position: absolute;
+    top: 0; /* Cambiado de 20px a 0 para mejorar el ajuste */
+    color: white;
+    text-align: center;
+    line-height: 64px; /* Ajustado para centrado vertical */
+    transform: translate3d(0, 0, 0);
+    transition: transform ease-out 200ms;
+    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transition: transform ease-out 200ms, -webkit-transform ease-out 200ms;
+}
+
+.menu-item:hover {
+    background: white;
+    color: #00bcd4;
+}
+
+.menu-open {
+    display: none;
+}
+
+.hamburger {
+    width: 20px; /* Reducido un 20% desde 25px */
+    height: 2.4px; /* Reducido un 20% desde 3px */
+    background: white;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px; /* Ajustado para centrar */
+    margin-top: -1.2px; /* Ajustado para centrar */
+    transition: transform 200ms;
+    -webkit-transition: transform 200ms, -webkit-transform 200ms;
+}
+
+.hamburger-1 {
+    transform: translate3d(0, -6.4px, 0); /* Ajustado al tamaño reducido */
+    -webkit-transform: translate3d(0, -6.4px, 0);
+}
+
+.hamburger-2 {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
+.hamburger-3 {
+    transform: translate3d(0, 6.4px, 0); /* Ajustado al tamaño reducido */
+    -webkit-transform: translate3d(0, 6.4px, 0);
+}
+
+.menu-open:checked + .menu-open-button .hamburger-1 {
+    transform: translate3d(0, 0, 0) rotate(45deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(45deg);
+}
+
+.menu-open:checked + .menu-open-button .hamburger-2 {
+    transform: translate3d(0, 0, 0) scale(0.1, 1);
+    -webkit-transform: translate3d(0, 0, 0) scale(0.1, 1);
+}
+
+.menu-open:checked + .menu-open-button .hamburger-3 {
+    transform: translate3d(0, 0, 0) rotate(-45deg);
+    -webkit-transform: translate3d(0, 0, 0) rotate(-45deg);
+}
+
+.menu-item:nth-child(3) {
+    transition-duration: 180ms;
+    -webkit-transition-duration: 180ms;
+}
+
+.menu-item:nth-child(4) {
+    transition-duration: 180ms;
+    -webkit-transition-duration: 180ms;
+}
+
+.menu-item:nth-child(5) {
+    transition-duration: 180ms;
+    -webkit-transition-duration: 180ms;
+}
+
+.menu-item:nth-child(6) {
+    transition-duration: 180ms;
+    -webkit-transition-duration: 180ms;
+}
+
+.menu-open-button {
+    z-index: 2;
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -webkit-transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-duration: 400ms;
+    -webkit-transition-duration: 400ms;
+    transform: scale(1.1, 1.1) translate3d(0, 0, 0);
+    -webkit-transform: scale(1.1, 1.1) translate3d(0, 0, 0);
+    cursor: pointer;
+}
+
+.menu-open-button:hover {
+    transform: scale(1.2, 1.2) translate3d(0, 0, 0);
+    -webkit-transform: scale(1.2, 1.2) translate3d(0, 0, 0);
+}
+
+.menu-open:checked + .menu-open-button {
+    transition-timing-function: linear;
+    -webkit-transition-timing-function: linear;
+    transition-duration: 200ms;
+    -webkit-transition-duration: 200ms;
+    transform: scale(0.8, 0.8) translate3d(0, 0, 0);
+    -webkit-transform: scale(0.8, 0.8) translate3d(0, 0, 0);
+}
+
+.menu-open:checked ~ .menu-item {
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+    -webkit-transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.menu-open:checked ~ .menu-item:nth-child(3) {
+    transition-duration: 190ms;
+    -webkit-transition-duration: 190ms;
+    transform: translate3d(0, 90px, 0); /* Desplazamiento hacia abajo */
+    -webkit-transform: translate3d(0, 90px, 0);
+}
+
+.menu-open:checked ~ .menu-item:nth-child(4) {
+    transition-duration: 290ms;
+    -webkit-transition-duration: 290ms;
+    transform: translate3d(0, 180px, 0); /* Desplazamiento hacia abajo */
+    -webkit-transform: translate3d(0, 180px, 0);
+}
+
+.menu-open:checked ~ .menu-item:nth-child(5) {
+    transition-duration: 390ms;
+    -webkit-transition-duration: 390ms;
+    transform: translate3d(0, 270px, 0); /* Desplazamiento hacia abajo */
+    -webkit-transform: translate3d(0, 270px, 0);
+}
+
+.menu-open:checked ~ .menu-item:nth-child(6) {
+    transition-duration: 490ms;
+    -webkit-transition-duration: 490ms;
+    transform: translate3d(0, 360px, 0); /* Desplazamiento hacia abajo */
+    -webkit-transform: translate3d(0, 360px, 0);
+}

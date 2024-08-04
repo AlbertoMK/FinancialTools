@@ -1,60 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const svg = document.getElementById('line-chart');
-    const points = JSON.parse(svg.getAttribute('data-points')); // Leer datos del atributo
-    const margin = { top: 80, right: 30, bottom: 0, left: 30 }; // Definir márgenes
-    const width = svg.getAttribute('width') - margin.left - margin.right;
-    const height = svg.getAttribute('height') - margin.top - margin.bottom;
+    const svg = d3.select('#line-chart');
+    const initialData = JSON.parse(svg.attr('data-points'));
+    updateChart(initialData);
+});
 
-    // Ajustar el dominio para que el primer punto comience en la esquina inferior izquierda
+function updateChart(dataPoints) {
+    const svg = d3.select('#line-chart');
+    const margin = { top: 80, right: 30, bottom: 20, left: 30 };
+    const width = +svg.attr('width') - margin.left - margin.right;
+    const height = +svg.attr('height') - margin.top - margin.bottom;
+
+    // Calcular el rango de datos
+    const xExtent = d3.extent(dataPoints, d => d[0]);
+    const yExtent = d3.extent(dataPoints, d => d[1]);
+
+    const horizontalLineYValue = 0;
+    const yMin = Math.min(yExtent[0], horizontalLineYValue);
+    const yMax = Math.max(yExtent[1], horizontalLineYValue);
+
     const xScale = d3.scaleLinear()
-        .domain([d3.min(points, d => d[0]), d3.max(points, d => d[0])])
-        .range([30, width]);
+        .domain([xExtent[0], xExtent[1]])
+        .range([margin.left, width + margin.left]);
 
     const yScale = d3.scaleLinear()
-        .domain([d3.max(points, d => d[1]), d3.min(points, d => d[1])]) // Nota: invertir dominio para que el valor máximo esté arriba
-        .range([45, height]);
+        .domain([yMax, yMin])
+        .range([margin.top, height + margin.top]);
 
     const line = d3.line()
-        .x(d => xScale(d[0])) // Ajustar la posición X
-        .y(d => yScale(d[1])) // Ajustar la posición Y
+        .x(d => xScale(d[0]))
+        .y(d => yScale(d[1]))
         .curve(d3.curveBasis);
 
-    // Clear existing content
-    svg.innerHTML = '';
+    // Seleccionar la línea existente, si existe
+    let path = svg.selectAll('path.line')
+        .data([dataPoints]);
 
-    // Create the line
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', line(points));
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', 'steelblue');
-    path.setAttribute('stroke-width', 2);
-    svg.appendChild(path);
+    path.enter().append('path')
+        .attr('class', 'line')
+        .attr('fill', 'none')
+        .attr('stroke', 'steelblue')
+        .attr('stroke-width', 2)
+        .merge(path) // Combine the entering and updating selections
+        .transition() // Add transition
+        .duration(750) // Duration of the transition
+        .attr('d', line); // Update the line path
 
-    // Añadir línea horizontal en y=0
-    const yValue = 0; // Línea horizontal en y=0
-    const yPosition = yScale(yValue);
+    // Actualizar la línea horizontal
+    const yPosition = yScale(horizontalLineYValue);
 
-    const horizontalLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    horizontalLine.setAttribute('x1', xScale(d3.min(points, d => d[0])));
-    horizontalLine.setAttribute('x2', xScale(d3.max(points, d => d[0])));
-    horizontalLine.setAttribute('y1', yPosition);
-    horizontalLine.setAttribute('y2', yPosition);
-    horizontalLine.setAttribute('stroke', 'lightgrey');
-    horizontalLine.setAttribute('stroke-width', 1);
-    horizontalLine.setAttribute('stroke-dasharray', '5,5'); // Línea punteada
-    svg.appendChild(horizontalLine);
+    svg.selectAll('line.horizontal')
+        .data([horizontalLineYValue])
+        .join('line')
+        .attr('class', 'horizontal')
+        .attr('x1', xScale(d3.min(dataPoints, d => d[0])))
+        .attr('x2', xScale(d3.max(dataPoints, d => d[0])))
+        .attr('y1', yPosition)
+        .attr('y2', yPosition)
+        .attr('stroke', 'lightgrey')
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '5,5');
 
-    // Create a text element for displaying the label
-    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label.setAttribute('font-size', '12');
-    label.setAttribute('fill', 'steelblue'); // Set text color to steelblue
-    svg.appendChild(label);
+    // Actualizar la etiqueta
+    const label = svg.selectAll('text')
+        .data([dataPoints])
+        .join('text')
+        .attr('font-size', '12')
+        .attr('fill', 'steelblue');
 
-    // Create a function to get the y position on the curve for a given x position
+    // Reuse the existing `mousemove` and `mouseleave` logic as needed
+    svg.on('mousemove', (event) => {
+        const [offsetX, offsetY] = d3.pointer(event);
+        const yPositionOnCurve = getYPositionAtX(offsetX);
+        const yValue = yScale.invert(yPositionOnCurve);
+
+        label.attr('fill', yValue > 0 ? 'lightgreen' : (yValue < 0 ? '#FF6666' : 'lightgrey'))
+            .text(`${yValue > 0 ? '+' : ''}${yValue.toFixed(2)}`)
+            .attr('x', offsetX - label.node().getBBox().width / 2)
+            .attr('y', yPositionOnCurve - 30);
+    });
+
+    svg.on('mouseleave', () => {
+        label.text('');
+    });
+
     function getYPositionAtX(xCoord) {
         const xValue = xScale.invert(xCoord);
+        const path = svg.select('path').node();
         const pathLength = path.getTotalLength();
-        const step = pathLength / 100; // Check at 100 intervals
+        const step = pathLength / 100;
         let closestY = 0;
         let closestDistance = Infinity;
 
@@ -67,34 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        return closestY; // Return y position on path
+        return closestY;
     }
+}
 
-    // Update label position on mousemove
-    svg.addEventListener('mousemove', (event) => {
-        const { offsetX, offsetY } = event;
-        const yPositionOnCurve = getYPositionAtX(offsetX);
-        const yValue = yScale.invert(yPositionOnCurve);
 
-        // Set the label text and position
-	if(yValue > 0) {
-		label.setAttribute('fill', 'lightgreen');
-		label.textContent = `+${yValue.toFixed(2)}`;
-	}
-	else if(yValue < 0) {
-		label.setAttribute('fill', '#FF6666');
-		label.textContent = `${yValue.toFixed(2)}`;
-	}
-	else {
-		label.setAttribute('fill', 'lightgrey');
-		label.textContent = `+${yValue.toFixed(2)}`;
-	}
-        label.setAttribute('x', offsetX - label.getBBox().width/2); // La posición X del label
-        label.setAttribute('y', yPositionOnCurve - 30); // La posición Y del label
-    });
-
-    svg.addEventListener('mouseleave', () => {
-        // Hide the label when the mouse leaves the SVG
-        label.textContent = '';
-    });
-});
+function updateChartFromButton(data) {
+    // Convierte la cadena en un array de datos
+    const newData = JSON.parse(data);
+    updateChart(newData);
+}

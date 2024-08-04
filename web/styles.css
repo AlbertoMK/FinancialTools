@@ -1,37 +1,60 @@
 /* styles.css */
 body {
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    display: flex;
+    padding: 20px; /* Añade algo de espacio alrededor del contenido */
+    align-items: center; /* Centra horizontalmente */
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    height: 100%;
     background-color: #091a32;
 }
 
-.chart-container {
-justify-content: center;
-    align-items: center;
-    position: relative;
-    width: 700px;
-    height: 500px;
-    border: none;
-    box-sizing: border-box;
+.container{
+    background-color: rgba(211, 211, 211, 0.074);
+    padding: 10px;
+    border-radius: 5%;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-svg {
+.content{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
     width: 100%;
-    height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
-.tooltip {
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 5px;
-    font-size: 12px;
-    pointer-events: none; /* No interactuar con el cursor */
-    display: none; /* Ocultar por defecto */
-    transform: translate(-50%, -100%); /* Mostrar el tooltip arriba del cursor */
+/* Estilos iniciales del botón */
+.round-button {
+    border: none; /* Sin borde */
+    border-radius: 50%; /* Hace el botón redondo */
+    background-color: lightgrey; /* Color de fondo */
+    color: steelblue; /* Color del texto */
+    cursor: pointer; /* Cursor de puntero */
+    font-size: 18px; /* Tamaño de la fuente */
+    text-align: center; /* Centra el texto horizontalmente */
+    line-height: 40px; /* Ajusta el espacio entre líneas para centrar el texto verticalmente */
+    width: 40px; /* Ancho del botón */
+    height: 40px; /* Alto del botón igual al ancho para hacerlo redondo */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiciones suaves para transformaciones y sombra */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra inicial */
+    font-weight: bold;
+}
+
+/* Efecto hover */
+.round-button:hover {
+    transform: translateY(-4px); /* Eleva el botón 4px hacia arriba */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Sombra más grande y difusa */
+}
+
+.primary-color{
+    color: steelblue;
+}
+
+.soft-font{
+    font-family: 'Poppins', sans-serif;
 }

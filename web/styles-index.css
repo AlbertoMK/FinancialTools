@@ -1,0 +1,130 @@
+#row1{
+    display: flex; /* Activa el modo flexbox para el contenedor */
+    justify-content: space-between; /* Opcional: distribuye el espacio uniformemente */
+    align-items: flex-start; /* Alinea los elementos en la parte superior (cambiar según necesidad) */
+    gap: 20px; /* Espacio entre los elementos */
+    width: 80%;
+}
+
+/* Estilos para el contenedor del interruptor y el texto */
+.switch-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Espacio entre el interruptor y el texto */
+}
+
+.switch {
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch label {
+    cursor: pointer;
+    background-color: red; /* Color de fondo cuando está desactivado */
+    border-radius: 34px;
+    display: block;
+    position: relative;
+    transition: background-color 0.2s;
+    width: 100%;
+    height: 100%;
+}
+
+.switch input:checked + label {
+    background-color: #4CAF50; /* Color de fondo cuando está activado */
+}
+
+.switch input:checked + label::before {
+    transform: translateX(26px);
+}
+
+.switch label::before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    background-color: white; /* Color del círculo que permanece blanco en todo momento */
+    transition: transform 0.2s;
+    transform: translateX(4px);
+    top: 4px; /* Centrar verticalmente el slider */
+    left: 4px;
+}
+
+.switch-label {
+    font-size: 14px; /* Tamaño del texto */
+    color: steelblue; /* Color del texto */
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 65%;
+    height: 600px;
+    border: none;
+    box-sizing: border-box;
+}
+
+div.periodos{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+#pie-chart {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#pie-chart-content {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.pie {
+    width: 50%;
+    padding-right: 10px;
+}
+
+.legend {
+    border: 0;
+    margin-left: 10px;
+    list-style: none;
+    padding: 0;
+}
+
+.legend li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    color: var(--color);
+}
+
+.legend-color {
+    display: inline-block;
+    width: 16px; /* Ajusta el tamaño según tus necesidades */
+    height: 16px; /* Ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: var(--color); /* Usa la variable de color definida en el HTML */
+}

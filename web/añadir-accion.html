@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir acción</title>
+    <link rel="stylesheet" href="styles-form.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-menu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="menu">
+        <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open"/>
+        <label class="menu-open-button" for="menu-open">
+            <span class="hamburger hamburger-1"></span>
+            <span class="hamburger hamburger-2"></span>
+            <span class="hamburger hamburger-3"></span>
+        </label>
+        
+        <a href="index.html" class="menu-item"> <i class="fa fa-bar-chart"></i> </a>
+        <a href="añadir-accion.html" class="menu-item"> <i class="fa fa-plus"></i> </a>
+        <a href="comprar-accion.html" class="menu-item"> <i class="fa-solid fa-dollar-sign"></i> </a>
+        <a href="#" class="menu-item"> <i class="fa fa-envelope"></i> </a>
+    </nav>
+
+    <main class="content">
+        <h1 class="soft-font primary-color">Añadir acción</h1>
+        <form class="container" action="#">
+            <input class="in" type="text" placeholder="Nombre">
+            <input class="in" type="text" placeholder="Ticker">
+            <div class="color-picker-container">
+                <label for="colorPicker">Selecciona un color:</label>
+                <input type="color" id="colorPicker" name="colorPicker" value="#ff0000">
+            </div>
+            <input type="submit" id="submit" value="Añadir">
+        </form>
+    </main>
+</body>
+</html>
